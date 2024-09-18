@@ -62,7 +62,8 @@ export interface CartSDK {
   updateItem: (
     variantId: string,
     quantity: number,
-    prevQuantity: number
+    prevQuantity: number,
+    updatedLines?: Array<Maybe<CheckoutLineInput>> | Maybe<CheckoutLineInput>
   ) => UpdateItemResult;
 
   updateItemWithLines: (
