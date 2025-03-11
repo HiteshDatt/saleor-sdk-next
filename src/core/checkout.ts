@@ -209,8 +209,8 @@ export const checkout = ({
           ...data
         }
         console.log('checkout create updatedCheckout',data,updatedCheckout);
-        await setLocalCheckoutInCache(client, updatedCheckout);
         if (data?.id) {
+          await setLocalCheckoutInCache(client, updatedCheckout);
           storage.setCheckout(updatedCheckout);
         }
         return {
@@ -523,12 +523,12 @@ export const checkout = ({
       console.log('promo code updatedCheckout',res,updatedCheckout);
       if (res?.id) {
         storage.setCheckout(updatedCheckout);
+        setLocalCheckoutInCache(
+          client,
+          updatedCheckout,
+          true
+        );
       }
-      setLocalCheckoutInCache(
-        client,
-        updatedCheckout,
-        true
-      );
 
       return {
         data: res,
@@ -576,12 +576,12 @@ export const checkout = ({
       console.log('remove promo code updatedCheckout',res,updatedCheckout);
       if (res?.id) {
         storage.setCheckout(updatedCheckout);
+        setLocalCheckoutInCache(
+          client,
+          updatedCheckout,
+          true
+        );
       }
-      setLocalCheckoutInCache(
-        client,
-        updatedCheckout,
-        true
-      );
 
       return {
         data: res,

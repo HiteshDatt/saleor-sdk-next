@@ -201,12 +201,12 @@ export const cart = ({
       if(resJson?.ok){
         if (resData?.id) {
           storage.setCheckout(updatedMetadata);
+          await setLocalCheckoutInCache(
+            client,
+            updatedMetadata,
+            true
+          );
         }
-        await setLocalCheckoutInCache(
-          client,
-          updatedMetadata,
-          true
-        );
       }
       client.writeQuery({
         query: GET_LOCAL_CHECKOUT,
@@ -411,12 +411,12 @@ export const cart = ({
         console.log('response json for remove cart if success',resJson);
         if (resData?.id) {
           storage.setCheckout(updatedMetadata);
+          await setLocalCheckoutInCache(
+            client,
+            updatedMetadata,
+            true
+          );
         }
-        await setLocalCheckoutInCache(
-          client,
-          updatedMetadata,
-          true
-        );
       }
       client.writeQuery({
         query: GET_LOCAL_CHECKOUT,
@@ -564,12 +564,12 @@ export const cart = ({
         if(resJson?.ok){
           if (resData?.id) {
             storage.setCheckout(updatedMetadata);
+            await setLocalCheckoutInCache(
+              client,
+              updatedMetadata,
+              true
+            );
           }
-          await setLocalCheckoutInCache(
-            client,
-            updatedMetadata,
-            true
-          );
         }
         client.writeQuery({
           query: GET_LOCAL_CHECKOUT,
