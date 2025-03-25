@@ -144,6 +144,9 @@ export interface CheckoutSDK {
   checkoutPaymentMethodUpdate?: (
     input: PaymentMethodUpdateInput
   ) => CheckoutPaymentMethodUpdateResult;
+  checkoutPaymentMethodUpdateRest?: (
+    input: PaymentMethodUpdateInput
+  ) => CheckoutPaymentMethodUpdateResult;
   createPayment?: (input: CreatePaymentInput) => CreatePaymentResult;
   completeCheckout?: (input?: CompleteCheckoutInput) => CompleteCheckoutResult;
   getCityStateFromPincode?: (pincode: string) => GetCityStateFromPincodeResult;
@@ -683,6 +686,72 @@ export const checkout = ({
     return null;
   };
 
+  const checkoutPaymentMethodUpdateRest: CheckoutSDK["checkoutPaymentMethodUpdateRest"] = async (
+    input: PaymentMethodUpdateInput
+  ) => {
+    client.writeQuery({
+      query: GET_LOCAL_CHECKOUT,
+      data: {
+        checkoutLoading: true,
+        useCashback: input.useCashback,
+      },
+    });
+
+    storage.setUseCashback(input.useCashback);
+
+    const checkoutString = storage.getCheckout();
+    const checkout =
+      checkoutString && typeof checkoutString === "string"
+        ? JSON.parse(checkoutString)
+        : checkoutString;
+          
+    if (checkout && checkout?.id) {
+      const variables: CheckoutPaymentMethodUpdateMutationVariables = {
+        checkoutId: checkout?.id,
+        gatewayId: input.gateway,
+        useCashback: input.useCashback,
+        isRecalculate: input.isRecalculate,
+        cashbackType: input.cashbackType
+      };
+
+      await fetch(`${restApiUrl}/rest/checkout_payment_method/`,{
+        method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(variables),
+      })
+      .then((res) => res.json())
+      .then((data) => {
+        if(data?.id){
+          const updatedCheckout = {
+            ...dummyCheckoutFields,
+            ...data
+          }
+          storage.setCheckout(updatedCheckout);
+          setLocalCheckoutInCache(
+            client,
+            updatedCheckout,
+            true
+          );
+          return {
+            data:{checkoutPaymentMethodUpdate:{checkout:updatedCheckout}},
+            errors: data?.message ? [{"message":data?.message}] : null
+          };
+        }
+      })
+      .catch((error) => {
+        console.error('Error: checkoutPaymentMethodUpdate', error);
+        return {
+          data: null,
+          errors: error
+        };
+      });
+    }
+
+    return null;
+  };
+
   const checkoutPaymentMethodUpdate: CheckoutSDK["checkoutPaymentMethodUpdate"] = async (
     input: PaymentMethodUpdateInput
   ) => {
@@ -1144,6 +1213,7 @@ export const checkout = ({
     removePromoCode,
     removePromoCodeRest,
     checkoutPaymentMethodUpdate,
+    checkoutPaymentMethodUpdateRest,
     createPayment,
     completeCheckout,
     getCityStateFromPincode,
