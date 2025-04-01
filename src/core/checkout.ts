@@ -130,12 +130,20 @@ export interface CheckoutSDK {
     shippingAddress: IAddress,
     email: string
   ) => SetShippingAddressResult;
+  setShippingAddressRest?: (
+    shippingAddress: IAddress,
+    email: string
+  ) => SetShippingAddressResult;
   setShippingAndBillingAddress?: (
     shippingAddress: IAddress,
     email: string
   ) => SetShippingAndBillingAddressResult;
+  setShippingAndBillingAddressRest?: (
+    shippingAddress: IAddress
+  ) => SetShippingAddressResult;
 
   setBillingAddress?: (billingAddress: IAddress) => SetBillingAddressResult;
+  setBillingAddressRest?: (billingAddress: IAddress) => SetBillingAddressResult;
   setShippingMethod?: (shippingMethodId: string) => SetShippingMethodResult;
   addPromoCodeRest?: (promoCode: string) => Promise<{ data: any; errors: { message: any,field: any }[] | null; } | null>;
   removePromoCodeRest?: (promoCode: string) => Promise<{ data: any; errors: { message: any,field: any }[] | null; } | null>;
@@ -339,6 +347,96 @@ export const checkout = ({
     return null;
   };
 
+  const setShippingAddressRest: CheckoutSDK["setShippingAddress"] = async (
+    shippingAddress: IAddress,
+    email: string
+  ) => {
+
+    try {
+
+    client.writeQuery({
+      query: GET_LOCAL_CHECKOUT,
+      data: {
+        checkoutLoading: true,
+      },
+    });
+    const checkoutString = storage.getCheckout();
+    const checkout =
+      checkoutString && typeof checkoutString === "string"
+        ? JSON.parse(checkoutString)
+        : checkoutString;
+
+    if (checkout && checkout?.id) {
+      const variables = {
+        checkoutId: checkout?.id,
+        // email,
+        shippingAddress: {
+          city: shippingAddress.city,
+          companyName: shippingAddress.companyName,
+          country: shippingAddress?.country?.code as CountryCode,
+          countryArea: shippingAddress.countryArea,
+          firstName: shippingAddress.firstName,
+          lastName: shippingAddress.lastName,
+          phone: shippingAddress.phone,
+          postalCode: shippingAddress.postalCode,
+          streetAddress1: shippingAddress.streetAddress1,
+          streetAddress2: shippingAddress.streetAddress2,
+        },
+      };
+
+      await fetch(`${restApiUrl}/rest/address_update/`,{
+        method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(variables),
+      })
+      .then((res) => res.json())
+      .then(async (data) => {
+        
+        const updatedCheckout = {
+          ...dummyCheckoutFields,
+          ...data
+        }
+        console.log('checkout create updatedCheckout',data,updatedCheckout,email);
+        if (data?.id) {
+          await setLocalCheckoutInCache(client, updatedCheckout);
+          storage.setCheckout(updatedCheckout);
+        }
+        return {
+          data,
+          errors: data?.message ? [{"message":data?.message}] : null
+        };
+      })
+      .catch((error) => {
+        console.error('Error: setShippingAddressRest', error);
+        client.writeQuery({
+          query: GET_LOCAL_CHECKOUT,
+          data: {
+            checkoutLoading: false,
+          },
+        });
+        return {
+          data: null,
+          errors: error
+        };
+      });
+    }
+
+    return null;
+
+  }catch (error) {
+    console.log('setShippingAddressRest error',error);
+    client.writeQuery({
+      query: GET_LOCAL_CHECKOUT,
+      data: {
+        checkoutLoading: false,
+      },
+    });
+    return null;
+  }
+  };
+
   const setBillingAddress: CheckoutSDK["setBillingAddress"] = async (
     billingAddress: IAddress
   ) => {
@@ -391,6 +489,94 @@ export const checkout = ({
     return null;
   };
 
+  const setBillingAddressRest: CheckoutSDK["setBillingAddressRest"] = async (
+    billingAddress: IAddress
+  ) => {
+
+    try {
+
+    client.writeQuery({
+      query: GET_LOCAL_CHECKOUT,
+      data: {
+        checkoutLoading: true,
+      },
+    });
+    const checkoutString = storage.getCheckout();
+    const checkout =
+      checkoutString && typeof checkoutString === "string"
+        ? JSON.parse(checkoutString)
+        : checkoutString;
+
+    if (checkout && checkout?.id) {
+      const variables = {
+        checkoutId: checkout?.id,
+        billingAddress: {
+          city: billingAddress.city,
+          companyName: billingAddress.companyName,
+          country: billingAddress?.country?.code as CountryCode,
+          countryArea: billingAddress.countryArea,
+          firstName: billingAddress.firstName,
+          lastName: billingAddress.lastName,
+          phone: billingAddress.phone,
+          postalCode: billingAddress.postalCode,
+          streetAddress1: billingAddress.streetAddress1,
+          streetAddress2: billingAddress.streetAddress2,
+        },
+      };
+
+      await fetch(`${restApiUrl}/rest/address_update/`,{
+        method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(variables),
+      })
+      .then((res) => res.json())
+      .then(async (data) => {
+        
+        const updatedCheckout = {
+          ...dummyCheckoutFields,
+          ...data
+        }
+        console.log('checkout create updatedCheckout',data,updatedCheckout);
+        if (data?.id) {
+          await setLocalCheckoutInCache(client, updatedCheckout);
+          storage.setCheckout(updatedCheckout);
+        }
+        return {
+          data,
+          errors: data?.message ? [{"message":data?.message}] : null
+        };
+      })
+      .catch((error) => {
+        console.error('Error: setBillingAddressRest', error);
+        client.writeQuery({
+          query: GET_LOCAL_CHECKOUT,
+          data: {
+            checkoutLoading: false,
+          },
+        });
+        return {
+          data: null,
+          errors: error
+        };
+      });
+    }
+
+    return null;
+
+  }catch (error) {
+    console.log('setBillingAddressRest error',error);
+    client.writeQuery({
+      query: GET_LOCAL_CHECKOUT,
+      data: {
+        checkoutLoading: false,
+      },
+    });
+    return null;
+  }
+  };
+
   const setShippingAndBillingAddress: CheckoutSDK["setShippingAndBillingAddress"] = async (
     shippingAddress: IAddress,
     email: string
@@ -416,6 +602,106 @@ export const checkout = ({
       resBilling,
     };
     return returnObject;
+  };
+
+  const setShippingAndBillingAddressRest: CheckoutSDK["setShippingAndBillingAddressRest"] = async (
+    shippingAddress: IAddress
+  ) => {
+
+    try {
+
+    client.writeQuery({
+      query: GET_LOCAL_CHECKOUT,
+      data: {
+        checkoutLoading: true,
+      },
+    });
+    const checkoutString = storage.getCheckout();
+    const checkout =
+      checkoutString && typeof checkoutString === "string"
+        ? JSON.parse(checkoutString)
+        : checkoutString;
+
+    if (checkout && checkout?.id) {
+      const variables = {
+        checkoutId: checkout?.id,
+        shippingAddress: {
+          city: shippingAddress.city,
+          companyName: shippingAddress.companyName,
+          country: shippingAddress?.country?.code as CountryCode,
+          countryArea: shippingAddress.countryArea,
+          firstName: shippingAddress.firstName,
+          lastName: shippingAddress.lastName,
+          phone: shippingAddress.phone,
+          postalCode: shippingAddress.postalCode,
+          streetAddress1: shippingAddress.streetAddress1,
+          streetAddress2: shippingAddress.streetAddress2,
+        },
+        billingAddress: {
+          city: shippingAddress.city,
+          companyName: shippingAddress.companyName,
+          country: shippingAddress?.country?.code as CountryCode,
+          countryArea: shippingAddress.countryArea,
+          firstName: shippingAddress.firstName,
+          lastName: shippingAddress.lastName,
+          phone: shippingAddress.phone,
+          postalCode: shippingAddress.postalCode,
+          streetAddress1: shippingAddress.streetAddress1,
+          streetAddress2: shippingAddress.streetAddress2,
+        },
+      };
+
+      await fetch(`${restApiUrl}/rest/address_update/`,{
+        method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(variables),
+      })
+      .then((res) => res.json())
+      .then(async (data) => {
+        
+        const updatedCheckout = {
+          ...dummyCheckoutFields,
+          ...data
+        }
+        console.log('checkout create updatedCheckout',data,updatedCheckout);
+        if (data?.id) {
+          await setLocalCheckoutInCache(client, updatedCheckout);
+          storage.setCheckout(updatedCheckout);
+        }
+        return {
+          data,
+          errors: data?.message ? [{"message":data?.message}] : null
+        };
+      })
+      .catch((error) => {
+        console.error('Error: setBillingAddressRest', error);
+        client.writeQuery({
+          query: GET_LOCAL_CHECKOUT,
+          data: {
+            checkoutLoading: false,
+          },
+        });
+        return {
+          data: null,
+          errors: error
+        };
+      });
+    }
+
+    return null;
+
+  }catch (error) {
+    console.log('setBillingAddressRest error',error);
+    client.writeQuery({
+      query: GET_LOCAL_CHECKOUT,
+      data: {
+        checkoutLoading: false,
+      },
+    });
+    return null;
+  }
   };
 
   const setAddressType: CheckoutSDK["setAddressType"] = async (
@@ -1204,8 +1490,11 @@ export const checkout = ({
     createCheckout,
     createCheckoutRest,
     setShippingAddress,
+    setShippingAddressRest,
     setBillingAddress,
+    setBillingAddressRest,
     setShippingAndBillingAddress,
+    setShippingAndBillingAddressRest,
     setAddressType,
     setShippingMethod,
     addPromoCodeRest,
