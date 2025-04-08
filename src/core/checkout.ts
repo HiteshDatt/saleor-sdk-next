@@ -988,8 +988,11 @@ export const checkout = ({
       query: GET_LOCAL_CHECKOUT,
       data: {
         checkoutLoading: true,
+        useCashback: input.useCashback,
       },
     });
+
+    storage.setUseCashback(input.useCashback);
 
     const checkoutString = storage.getCheckout();
     const checkout =
