@@ -194,11 +194,17 @@ export const checkout = ({
           ? JSON.parse(checkoutString)
           : checkoutString;
       if (!(checkout && checkout?.id)) {
+        const token = storage.getAccessToken();
+        let header:any = {
+          "Content-Type": "application/json",
+        };
+        if(token) header={
+          ...header,
+          "Authorization": `JWT ${token}`
+        }
         const dataJson = await fetch(`${restApiUrl}/rest/create_checkout/`,{
           method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
+            headers: header,
             body: JSON.stringify({
               checkoutInput:checkoutInput
             }),
