@@ -1192,6 +1192,12 @@ export const checkout = ({
           if (data?.checkoutComplete?.order?.id) {
             if (!data?.checkoutComplete.confirmationNeeded) {
               storage.setCheckout({});
+              client.writeQuery({
+                query: GET_LOCAL_CHECKOUT,
+                data: {
+                  useCashback: false,
+                },
+              });
             }
           }
           await setLocalCheckoutInCache(client, {}, false, data);
