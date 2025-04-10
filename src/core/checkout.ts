@@ -99,7 +99,7 @@ interface CheckoutInput {
   email: string;
   isRecalculate: Boolean;
   checkoutMetadataInput: Array<{key:string,value:string}>;
-  shipping_address: any;
+  shippingAddress: any;
 }
 export interface CheckoutSDK {
   loaded?: any;
