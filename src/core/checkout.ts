@@ -237,6 +237,12 @@ export const checkout = ({
   apolloClient: client,
   restApiUrl,
 }: SaleorClientMethodsProps): CheckoutSDK => {
+
+  function normalizeTags(tags?: string[] | { name: string }[]): { name: string }[] {
+  if (!tags) return [];
+  if (typeof tags[0] === "object") return tags as { name: string }[];
+  return (tags as string[]).map(tag => ({ name: tag }));
+}
   const createCheckout: CheckoutSDK["createCheckout"] = async (
     tags?: string[]
   ) => {
@@ -300,15 +306,20 @@ export const checkout = ({
           checkoutInput: checkoutInputVariables,
         },
         update: (_, { data }) => {
-          setLocalCheckoutInCache(client, data?.checkoutCreate?.checkout);
-          if (data?.checkoutCreate?.checkout?.id) {
-            storage.setCheckout(data?.checkoutCreate?.checkout);
+          const checkout = data?.checkoutCreate?.checkout;
+          if (checkout && checkout.tags) {
+            checkout.tags = normalizeTags(checkout.tags);
+          }
+          setLocalCheckoutInCache(client, checkout);
+          if (checkout?.id) {
+            storage.setCheckout(checkout);
           }
         },
       });
     }
     return null;
   };
+
 
   const createCheckoutRest: CheckoutSDK["createCheckoutRest"] = async (
     tags?: string[],
@@ -363,6 +374,10 @@ export const checkout = ({
           ...dummyCheckoutFields,
           ...createCheckoutRes,
         };
+        if (updatedCheckout.tags) {
+          updatedCheckout.tags = normalizeTags(updatedCheckout.tags);
+        }
+        storage.setCheckout(updatedCheckout);
 
         storage.setCheckout(updatedCheckout);
 
@@ -1542,6 +1557,9 @@ export const checkout = ({
     fetchDiscount?: boolean
   ) => {
     if (checkout) {
+      if (checkout.tags) {
+        checkout.tags = normalizeTags(checkout.tags);
+      }
       setLocalCheckoutInCache(client, checkout, fetchDiscount);
       storage.setCheckout(checkout);
     }
