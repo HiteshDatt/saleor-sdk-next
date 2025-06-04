@@ -793,7 +793,7 @@ export const auth = ({
       UserCheckoutDetailsQueryVariables
     >({
       mutation: USER_CHECKOUT_DETAILS,
-      variables: finalCheckoutTag ? { finalCheckoutTag } : {},
+      variables: finalCheckoutTag ? { checkoutTag:finalCheckoutTag } : {},
     });
 
     if (res?.data?.me?.checkout?.id) {
