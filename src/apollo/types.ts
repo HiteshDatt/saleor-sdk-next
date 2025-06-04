@@ -22442,7 +22442,7 @@ export type DiscountsAndCashbackQueryVariables = Exact<{
 
 export type DiscountsAndCashbackQuery = { checkoutDiscounts: Maybe<Pick<DiscountsType, 'prepaidDiscount' | 'couponDiscount' | 'cashbackDiscount'>>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>> };
 
-export type UserCheckoutDetailsQueryVariables = Exact<{checkoutTag?: string | null;}>;
+export type UserCheckoutDetailsQueryVariables = Exact<{finalCheckoutTag?: string | null;}>;
 
 
 export type UserCheckoutDetailsQuery = { me: Maybe<(
