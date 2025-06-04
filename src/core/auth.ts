@@ -787,12 +787,13 @@ export const auth = ({
     console.log(checkoutTag,"vaibhav1")
     const tag=process.env.checkoutTag;
     console.log(tag,"vaibhav2")
+    const finalCheckoutTag = checkoutTag || tag ;
     const res = await client.mutate<
       UserCheckoutDetailsQuery,
       UserCheckoutDetailsQueryVariables
     >({
       mutation: USER_CHECKOUT_DETAILS,
-      variables: checkoutTag ? { checkoutTag } : {},
+      variables: finalCheckoutTag ? { finalCheckoutTag } : {},
     });
 
     if (res?.data?.me?.checkout?.id) {
