@@ -783,11 +783,16 @@ export const auth = ({
     recalculationQuery = false,
     refreshToken = true
   ) => {
+    const checkoutTag = process.env.NEXT_PUBLIC_CHECKOUT_TAG;
+    console.log(checkoutTag,"vaibhav1")
+    const tag=process.env.checkoutTag;
+    console.log(tag,"vaibhav2")
     const res = await client.mutate<
       UserCheckoutDetailsQuery,
       UserCheckoutDetailsQueryVariables
     >({
       mutation: USER_CHECKOUT_DETAILS,
+      variables: checkoutTag ? { checkoutTag } : {},
     });
 
     if (res?.data?.me?.checkout?.id) {
