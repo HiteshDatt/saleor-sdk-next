@@ -72,6 +72,7 @@ export const CHECKOUT_PAYMENTS_NEXT = gql`
         cashbackDiscountAmount
         couponDiscount
         prepaidDiscountAmount
+        platformChargeAmount
       }
       shippingMethod {
         ...ShippingMethod

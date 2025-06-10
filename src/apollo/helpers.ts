@@ -393,6 +393,8 @@ export const getCheckoutPayments = async (
           couponDiscount: updatedCheckoutDetails?.paymentMethod?.couponDiscount,
           cashbackDiscount:
             updatedCheckoutDetails?.paymentMethod?.cashbackDiscountAmount,
+          platformCharge:
+            updatedCheckoutDetails?.paymentMethod?.platformChargeAmount,
         },
         cashback: updatedCheckoutDetails?.cashback,
       },
