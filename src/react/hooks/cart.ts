@@ -80,6 +80,7 @@ export const useCartState = () => {
     }, 0) || 0;
 
   const itemDiscount = mrp - netPrice;
+  console.log("cartstate",data)
 
   const cartState = {
     items: data?.localCheckout?.lines || [],
@@ -94,6 +95,10 @@ export const useCartState = () => {
     prepaidDiscount:
       createTaxedPriceFromAmount(
         data?.localCheckoutDiscounts?.prepaidDiscount
+      ) || defaultPrice,
+    platformCharge:
+      createTaxedPriceFromAmount(
+        data?.localCheckoutDiscounts?.platformChargeAmount
       ) || defaultPrice,
     cashbackDiscount:
       createTaxedPriceFromAmount(
