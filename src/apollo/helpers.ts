@@ -250,10 +250,14 @@ export const getLatestCheckout = async (
             cashbackDiscount:
               checkoutDetailRes?.data?.checkout?.paymentMethod
                 ?.cashbackDiscountAmount,
+            platformCharge: 
+              checkoutDetailRes?.data?.checkout?.paymentMethod
+                ?.platformChargeAmount,
           },
           cashback: checkoutDetailRes?.data?.checkout?.cashback,
         },
       };
+      console.log("vaibhav123",res.data)
 
       storage.setDiscounts(res.data);
 
@@ -400,6 +404,7 @@ export const getCheckoutPayments = async (
       },
     };
     storage.setDiscounts(res.data);
+    console.log("vaibhav345",res.data)
 
     client.writeQuery({
       query: GET_LOCAL_CHECKOUT,

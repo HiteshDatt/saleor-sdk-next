@@ -39,6 +39,7 @@ export const CHECKOUT_DETAILS_NEXT = gql`
         cashbackDiscountAmount
         couponDiscount
         prepaidDiscountAmount
+        platformChargeAmount
       }
       cashback {
         amount
