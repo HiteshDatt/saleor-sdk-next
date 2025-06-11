@@ -108,7 +108,7 @@ export const GET_LOCAL_CHECKOUT = gql`
       prepaidDiscount
       couponDiscount
       cashbackDiscount
-      platformChargeAmount
+      platformCharge
     }
     localCashback @client {
       amount

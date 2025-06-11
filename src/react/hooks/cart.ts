@@ -98,7 +98,7 @@ export const useCartState = () => {
       ) || defaultPrice,
     platformCharge:
       createTaxedPriceFromAmount(
-        data?.localCheckoutDiscounts?.platformChargeAmount
+        data?.localCheckoutDiscounts?.platformCharge
       ) || defaultPrice,
     cashbackDiscount:
       createTaxedPriceFromAmount(
