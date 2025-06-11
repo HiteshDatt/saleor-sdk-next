@@ -13639,6 +13639,7 @@ export type PaymentMethodType = Node & ObjectWithMetadata & {
   checkout: CheckoutType;
   prepaidDiscountAmount: Scalars['Float'];
   cashbackDiscountAmount: Scalars['Float'];
+  platformChargeAmount: Scalars['Float'];
   gateway: Scalars['String'];
   useCashback: Scalars['Boolean'];
   created: Scalars['DateTime'];
@@ -22407,7 +22408,7 @@ export type CheckoutDetailsNextQueryVariables = Exact<{
 export type CheckoutDetailsNextQuery = (
   Pick<Query, 'checkoutUpdated'>
   & { checkout: Maybe<(
-    { paymentMethod: Maybe<Pick<PaymentMethodType, 'cashbackDiscountAmount' | 'couponDiscount' | 'prepaidDiscountAmount'>>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>> }
+    { paymentMethod: Maybe<Pick<PaymentMethodType, 'cashbackDiscountAmount' | 'couponDiscount' | 'prepaidDiscountAmount'| 'platformChargeAmount'>>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>> }
     & CheckoutFragment
   )> }
 );
@@ -22419,7 +22420,7 @@ export type CheckoutPaymentsNextQueryVariables = Exact<{
 
 export type CheckoutPaymentsNextQuery = { checkout: Maybe<(
     Pick<Checkout, 'id' | 'token' | 'voucherCode'>
-    & { totalPrice: Maybe<PriceFragment>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>>, discount: Maybe<Pick<Money, 'amount' | 'currency'>>, paymentMethod: Maybe<Pick<PaymentMethodType, 'cashbackDiscountAmount' | 'couponDiscount' | 'prepaidDiscountAmount'>>, subtotalPrice: Maybe<PriceFragment> }
+    & { totalPrice: Maybe<PriceFragment>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>>, discount: Maybe<Pick<Money, 'amount' | 'currency'>>, paymentMethod: Maybe<Pick<PaymentMethodType, 'cashbackDiscountAmount' | 'couponDiscount' | 'prepaidDiscountAmount'| 'platformChargeAmount'>>, subtotalPrice: Maybe<PriceFragment> }
   )> };
 
 export type GetCartItemsQueryVariables = Exact<{ [key: string]: never; }>;
