@@ -5765,7 +5765,7 @@ export type DiscountsType = {
   couponDiscount: Maybe<Scalars['Decimal']>;
   prepaidDiscount: Maybe<Scalars['Decimal']>;
   cashbackDiscount: Maybe<Scalars['Decimal']>;
-    platformChargeAmount: Maybe<Scalars['Decimal']>;
+    platformCharge: Maybe<Scalars['Decimal']>;
 };
 
 /** Represents shop's domain. */
@@ -22434,7 +22434,7 @@ export type GetLocalCheckoutQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetLocalCheckoutQuery = (
   Pick<Query, 'useCashback' | 'checkoutLoading' | 'userWalletBalance'>
-  & { localCheckout: Maybe<CheckoutFragment>, localCheckoutDiscounts: Maybe<Pick<DiscountsType, 'prepaidDiscount' | 'couponDiscount' | 'cashbackDiscount' | 'platformChargeAmount'>>, localCashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>>, recentOrder: Maybe<OrderDetailFragment> }
+  & { localCheckout: Maybe<CheckoutFragment>, localCheckoutDiscounts: Maybe<Pick<DiscountsType, 'prepaidDiscount' | 'couponDiscount' | 'cashbackDiscount' | 'platformCharge'>>, localCashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>>, recentOrder: Maybe<OrderDetailFragment> }
 );
 
 export type DiscountsAndCashbackQueryVariables = Exact<{
