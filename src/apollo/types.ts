@@ -22511,7 +22511,7 @@ export type CheckoutRecalculationQueryVariables = Exact<{
 
 
 export type CheckoutRecalculationQuery = { checkoutRecalculation: Maybe<(
-    { paymentMethod: Maybe<Pick<PaymentMethodType, 'cashbackDiscountAmount' | 'couponDiscount' | 'prepaidDiscountAmount'>>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>> }
+    { paymentMethod: Maybe<Pick<PaymentMethodType, 'cashbackDiscountAmount' | 'couponDiscount' | 'prepaidDiscountAmount'| 'platformChargeAmount'>>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>> }
     & CheckoutFragment
   )> };
 
