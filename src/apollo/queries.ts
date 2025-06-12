@@ -72,6 +72,7 @@ export const CHECKOUT_PAYMENTS_NEXT = gql`
         cashbackDiscountAmount
         couponDiscount
         prepaidDiscountAmount
+        platformChargeAmount
       }
       shippingMethod {
         ...ShippingMethod
@@ -106,6 +107,7 @@ export const GET_LOCAL_CHECKOUT = gql`
       prepaidDiscount
       couponDiscount
       cashbackDiscount
+      platformcharge
     }
     localCashback @client {
       amount

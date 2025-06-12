@@ -1373,6 +1373,7 @@ export const cart = ({
                 couponDiscount: updatedCheckout?.paymentMethod?.couponDiscount,
                 cashbackDiscount:
                   updatedCheckout?.paymentMethod?.cashbackDiscountAmount,
+                  platfromCharge: updatedCheckout?.paymentMethod?.platformChargeAmount
               },
               cashback: updatedCheckout?.cashback,
             },

@@ -290,6 +290,7 @@ const getTypePolicies = (autologin: boolean): TypedTypePolicies => ({
                 prepaidDiscount: "0",
                 couponDiscount: "0",
                 cashbackDiscount: "0",
+                platformCharge:"0"
               }
             );
           }
@@ -298,6 +299,7 @@ const getTypePolicies = (autologin: boolean): TypedTypePolicies => ({
               prepaidDiscount: "0",
               couponDiscount: "0",
               cashbackDiscount: "0",
+              platformCharge:"0"
             }
           );
         },

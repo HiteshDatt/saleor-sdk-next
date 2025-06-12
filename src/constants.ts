@@ -40,6 +40,7 @@ export const dummyCheckoutFields = {
     cashbackDiscountAmount: 0,
     couponDiscount: "0",
     prepaidDiscountAmount: 0,
+    platformChargeAmount:0,
     __typename: "PaymentMethodType",
   },
   shippingAddress: null,
