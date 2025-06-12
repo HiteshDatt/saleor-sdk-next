@@ -24,6 +24,7 @@ import {
 import { setContext } from "@apollo/client/link/context";
 import axios from "axios";
 import { REST_API_METHODS_TYPES } from "../constants";
+import { platform } from "os";
 
 let client: ApolloClient<NormalizedCacheObject>;
 let authClient: AuthSDK;
@@ -290,6 +291,7 @@ const getTypePolicies = (autologin: boolean): TypedTypePolicies => ({
                 prepaidDiscount: "0",
                 couponDiscount: "0",
                 cashbackDiscount: "0",
+                platformCharge: "0"
               }
             );
           }
@@ -298,6 +300,7 @@ const getTypePolicies = (autologin: boolean): TypedTypePolicies => ({
               prepaidDiscount: "0",
               couponDiscount: "0",
               cashbackDiscount: "0",
+              platformCharge:"0"
             }
           );
         },
