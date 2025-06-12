@@ -13659,6 +13659,7 @@ export type PaymentMethodType = Node & ObjectWithMetadata & {
    */
   meta: Array<Maybe<MetaStore>>;
   couponDiscount: Maybe<Scalars['String']>;
+  platformChargeAmount: Maybe<Scalars['String']>;
 };
 
 /** Refunds the captured payment amount. */
@@ -22408,7 +22409,7 @@ export type CheckoutDetailsNextQueryVariables = Exact<{
 export type CheckoutDetailsNextQuery = (
   Pick<Query, 'checkoutUpdated'>
   & { checkout: Maybe<(
-    { paymentMethod: Maybe<Pick<PaymentMethodType, 'cashbackDiscountAmount' | 'couponDiscount' | 'prepaidDiscountAmount'>>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>> }
+    { paymentMethod: Maybe<Pick<PaymentMethodType, 'cashbackDiscountAmount' | 'couponDiscount' | 'prepaidDiscountAmount'| 'platformChargeAmount'>>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>> }
     & CheckoutFragment
   )> }
 );
