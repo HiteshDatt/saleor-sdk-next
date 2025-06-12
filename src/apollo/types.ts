@@ -13658,6 +13658,7 @@ export type PaymentMethodType = Node & ObjectWithMetadata & {
    */
   meta: Array<Maybe<MetaStore>>;
   couponDiscount: Maybe<Scalars['String']>;
+  platformChargeAmount: Scalars['Float'];
 };
 
 /** Refunds the captured payment amount. */
