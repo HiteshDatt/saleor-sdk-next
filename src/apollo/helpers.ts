@@ -139,6 +139,9 @@ export const setLocalCheckoutInCache = async (
               cashbackDiscount:
                 resShipping.data?.checkoutShippingMethodUpdate?.checkout
                   ?.paymentMethod?.cashbackDiscountAmount,
+              platformCharge:
+                resShipping.data?.checkoutShippingMethodUpdate?.checkout
+                  ?.paymentMethod?.platformChargeAmount,
             },
             cashback:
               resShipping.data?.checkoutShippingMethodUpdate?.checkout
@@ -198,6 +201,7 @@ export const setLocalCheckoutInCache = async (
           prepaidDiscount: checkout?.paymentMethod?.prepaidDiscountAmount,
           couponDiscount: checkout?.paymentMethod?.couponDiscount,
           cashbackDiscount: checkout?.paymentMethod?.cashbackDiscountAmount,
+          platformCharge: checkout?.paymentMethod?.platformChargeAmount,
         },
         cashback: checkout?.cashback,
       },
@@ -332,6 +336,9 @@ export const checkoutRecalculationUtil = async (
             cashbackDiscount:
               checkoutDetailRes?.data?.checkoutRecalculation?.paymentMethod
                 ?.cashbackDiscountAmount,
+            platformCharge:
+              checkoutDetailRes?.data?.checkoutRecalculation?.paymentMethod
+                ?.platformChargeAmount,
           },
           cashback: checkoutDetailRes?.data?.checkoutRecalculation?.cashback,
         },

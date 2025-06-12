@@ -1258,6 +1258,7 @@ export const UPDATE_CHECKOUT_SHIPPING_METHOD_MUTATION_NEXT = gql`
           cashbackDiscountAmount
           couponDiscount
           prepaidDiscountAmount
+          platformChargeAmount
         }
         cashback {
           amount
