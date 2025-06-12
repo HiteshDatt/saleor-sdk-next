@@ -165,6 +165,7 @@ export const createStorage = (autologinEnabled: boolean): void => {
       prepaidDiscount: "0",
       couponDiscount: "0",
       cashbackDiscount: "0",
+      platformCharge:"0"
     });
   };
 

@@ -72,6 +72,7 @@ export interface CartSDK {
   offerDiscount?: any;
 
   prepaidDiscount?: any;
+  platformCharge?:any;
 
   cashbackDiscount?: any;
 
@@ -265,6 +266,8 @@ export const cart = ({
             couponDiscount: updatedCheckout?.paymentMethod?.couponDiscount,
             cashbackDiscount:
               updatedCheckout?.paymentMethod?.cashbackDiscountAmount,
+            platformCharge:
+              updatedCheckout?.paymentMethod?.platformChargeAmount,
           },
           cashback: updatedCheckout?.cashback,
         },
@@ -529,6 +532,9 @@ export const cart = ({
               cashbackDiscount:
                 res?.data?.checkoutLineDelete?.checkout?.paymentMethod
                   ?.cashbackDiscountAmount,
+              platformCharge:
+                res?.data?.checkoutLineDelete?.checkout?.paymentMethod
+                  ?.platformChargeAmount
             },
             cashback: res?.data?.checkoutLineDelete?.checkout?.cashback,
           },
@@ -684,6 +690,8 @@ export const cart = ({
                     updatedCheckout?.paymentMethod?.couponDiscount,
                   cashbackDiscount:
                     updatedCheckout?.paymentMethod?.cashbackDiscountAmount,
+                  platformCharge:
+                    updatedCheckout?.paymentMethod?.platformChargeAmount,
                 },
                 cashback: res?.data?.cashback,
               },
@@ -938,6 +946,9 @@ export const cart = ({
               cashbackDiscount:
                 res.data?.checkoutLinesAdd?.checkout?.paymentMethod
                   ?.cashbackDiscountAmount,
+              platformCharge:
+                res.data?.checkoutLinesAdd?.checkout?.paymentMethod
+                  ?.platformChargeAmount,
             },
             cashback: res.data?.checkoutLinesAdd?.checkout?.cashback,
           },
@@ -1084,6 +1095,9 @@ export const cart = ({
               cashbackDiscount:
                 res.data?.checkoutCreate?.checkout?.paymentMethod
                   ?.cashbackDiscountAmount,
+              platformCharge:
+                res.data?.checkoutCreate?.checkout?.paymentMethod
+                  ?.platformChargeAmount,
             },
             cashback: res.data?.checkoutCreate?.checkout?.cashback,
           },
@@ -1239,6 +1253,8 @@ export const cart = ({
                     updatedCheckout?.paymentMethod?.couponDiscount,
                   cashbackDiscount:
                     updatedCheckout?.paymentMethod?.cashbackDiscountAmount,
+                  platformCharge:
+                    updatedCheckout?.paymentMethod?.platformChargeAmount,
                 },
                 cashback: updatedCheckout?.cashback,
               },
@@ -1361,7 +1377,7 @@ export const cart = ({
             ...dummyCheckoutFields,
             ...createCheckoutResUpdated,
           };
-          console.log("vaibhav678")
+          console.log("vaibhav10")
 
           storage.setCheckout(updatedCheckout);
 
@@ -1374,7 +1390,7 @@ export const cart = ({
                 couponDiscount: updatedCheckout?.paymentMethod?.couponDiscount,
                 cashbackDiscount:
                   updatedCheckout?.paymentMethod?.cashbackDiscountAmount,
-                  platfromCharge: updatedCheckout?.paymentMethod?.platformChargeAmount
+                platfromCharge: updatedCheckout?.paymentMethod?.platformChargeAmount
               },
               cashback: updatedCheckout?.cashback,
             },
@@ -1579,6 +1595,7 @@ export const cart = ({
                       updatedCheckout?.paymentMethod?.couponDiscount,
                     cashbackDiscount:
                       updatedCheckout?.paymentMethod?.cashbackDiscountAmount,
+                    platformCharge:updatedCheckout?.paymentMethod?.platformChargeAmount
                   },
                   cashback: res?.data?.cashback,
                 },
@@ -1706,6 +1723,9 @@ export const cart = ({
                 cashbackDiscount:
                   res?.data?.checkoutLinesUpdate?.checkout?.paymentMethod
                     ?.cashbackDiscountAmount,
+                platformCharge:
+                  res?.data?.checkoutLinesUpdate?.checkout?.paymentMethod
+                    ?.platformChargeAmount,
               },
               cashback: res?.data?.checkoutLinesUpdate?.checkout?.cashback,
             },
@@ -1865,6 +1885,8 @@ export const cart = ({
               couponDiscount: updatedCheckout?.paymentMethod?.couponDiscount,
               cashbackDiscount:
                 updatedCheckout?.paymentMethod?.cashbackDiscountAmount,
+              platformCharge:
+                updatedCheckout?.paymentMethod?.platformChargeAmount,
             },
             cashback: updatedCheckout?.cashback,
           },
@@ -1978,6 +2000,8 @@ export const cart = ({
               couponDiscount: updatedCheckout?.paymentMethod?.couponDiscount,
               cashbackDiscount:
                 updatedCheckout?.paymentMethod?.cashbackDiscountAmount,
+              platformCharge:
+                updatedCheckout?.paymentMethod?.platformChargeAmount,
             },
             cashback: updatedCheckout?.cashback,
           },
@@ -2110,6 +2134,9 @@ export const cart = ({
               cashbackDiscount:
                 res?.data?.checkoutLinesUpdate?.checkout?.paymentMethod
                   ?.cashbackDiscountAmount,
+              platformCharge:
+                res?.data?.checkoutLinesUpdate?.checkout?.paymentMethod
+                  ?.platformChargeAmount
             },
             cashback: res?.data?.checkoutLinesUpdate?.checkout?.cashback,
           },
@@ -2201,6 +2228,9 @@ export const cart = ({
               cashbackDiscount:
                 res?.data?.checkoutCreate?.checkout?.paymentMethod
                   ?.cashbackDiscountAmount,
+              platformCharge:
+                res?.data?.checkoutCreate?.checkout?.paymentMethod
+                  ?.platformChargeAmount,
             },
             cashback: res?.data?.checkoutCreate?.checkout?.cashback,
           },

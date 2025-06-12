@@ -644,6 +644,7 @@ export const REMOVE_CHECKOUT_LINE_MUTATION = gql`
           cashbackDiscountAmount
           couponDiscount
           prepaidDiscountAmount
+          platformChargeAmount
         }
         cashback {
           amount
@@ -680,6 +681,7 @@ export const UPDATE_CHECKOUT_SHIPPING_ADDRESS_MUTATION = gql`
           cashbackDiscountAmount
           couponDiscount
           prepaidDiscountAmount
+          platformChargeAmount
         }
         cashback {
           amount
@@ -726,6 +728,7 @@ export const UPDATE_CHECKOUT_SHIPPING_ADDRESS_NEW = gql`
           cashbackDiscountAmount
           couponDiscount
           prepaidDiscountAmount
+          platformChargeAmount
         }
         cashback {
           amount
@@ -819,6 +822,7 @@ export const ADD_CHECKOUT_PROMO_CODE = gql`
           cashbackDiscountAmount
           couponDiscount
           prepaidDiscountAmount
+          platformChargeAmount
         }
         cashback {
           amount
@@ -851,6 +855,7 @@ export const REMOVE_CHECKOUT_PROMO_CODE = gql`
           cashbackDiscountAmount
           couponDiscount
           prepaidDiscountAmount
+          platformChargeAmount
         }
         cashback {
           amount
@@ -934,6 +939,7 @@ export const CHECKOUT_PAYMENT_METHOD_UPDATE = gql`
           cashbackDiscountAmount
           couponDiscount
           prepaidDiscountAmount
+          platformChargeAmount
         }
         cashback {
           amount
@@ -1171,6 +1177,7 @@ export const CHECKOUT_CUSTOMER_ATTACH_NEW = gql`
           cashbackDiscountAmount
           couponDiscount
           prepaidDiscountAmount
+          platformChargeAmount
         }
         cashback {
           amount
@@ -1202,6 +1209,7 @@ export const ADD_CHECKOUT_LINE_MUTATION_NEXT = gql`
           cashbackDiscountAmount
           couponDiscount
           prepaidDiscountAmount
+          platformChargeAmount
         }
         cashback {
           amount
@@ -1229,6 +1237,7 @@ export const CREATE_CHECKOUT_MUTATION_NEXT = gql`
           cashbackDiscountAmount
           couponDiscount
           prepaidDiscountAmount
+          platformChargeAmount
         }
         cashback {
           amount
@@ -1258,6 +1267,7 @@ export const UPDATE_CHECKOUT_SHIPPING_METHOD_MUTATION_NEXT = gql`
           cashbackDiscountAmount
           couponDiscount
           prepaidDiscountAmount
+          platformChargeAmount
         }
         cashback {
           amount
@@ -1290,6 +1300,7 @@ export const UPDATE_CHECKOUT_LINE_MUTATION_NEXT = gql`
           cashbackDiscountAmount
           couponDiscount
           prepaidDiscountAmount
+          platformChargeAmount
         }
         cashback {
           amount

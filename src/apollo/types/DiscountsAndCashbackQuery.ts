@@ -11,6 +11,7 @@ export interface DiscountsAndCashbackQuery_checkoutDiscounts {
   prepaidDiscount: any | null;
   couponDiscount: any | null;
   cashbackDiscount: any | null;
+  platformCharge?:any | null;
 }
 
 export interface DiscountsAndCashbackQuery_cashback {
