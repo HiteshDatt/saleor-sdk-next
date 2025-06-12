@@ -250,6 +250,8 @@ export const getLatestCheckout = async (
             cashbackDiscount:
               checkoutDetailRes?.data?.checkout?.paymentMethod
                 ?.cashbackDiscountAmount,
+            platformCharge: checkoutDetailRes?.data?.checkout?.paymentMethod
+                ?.platformChargeAmount,
           },
           cashback: checkoutDetailRes?.data?.checkout?.cashback,
         },

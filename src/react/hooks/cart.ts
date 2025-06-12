@@ -80,6 +80,7 @@ export const useCartState = () => {
     }, 0) || 0;
 
   const itemDiscount = mrp - netPrice;
+  console.log("cartstate",data?.localCheckoutDiscounts,data)
 
   const cartState = {
     items: data?.localCheckout?.lines || [],
