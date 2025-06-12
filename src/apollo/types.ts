@@ -5765,7 +5765,7 @@ export type DiscountsType = {
   couponDiscount: Maybe<Scalars['Decimal']>;
   prepaidDiscount: Maybe<Scalars['Decimal']>;
   cashbackDiscount: Maybe<Scalars['Decimal']>;
-    platformCharge: Maybe<Scalars['Decimal']>;
+  platformCharge: Maybe<Scalars['Decimal']>;
 };
 
 /** Represents shop's domain. */
@@ -22359,7 +22359,7 @@ export type UpdateCheckoutShippingMethodNextMutationVariables = Exact<{
 
 
 export type UpdateCheckoutShippingMethodNextMutation = { checkoutShippingMethodUpdate: Maybe<{ checkout: Maybe<(
-      { paymentMethod: Maybe<Pick<PaymentMethodType, 'cashbackDiscountAmount' | 'couponDiscount' | 'prepaidDiscountAmount'>>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>> }
+      { paymentMethod: Maybe<Pick<PaymentMethodType, 'cashbackDiscountAmount' | 'couponDiscount' | 'prepaidDiscountAmount'| 'platformChargeAmount'>>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>> }
       & CheckoutFragment
     )>, errors: Array<CheckoutErrorFragment> }> };
 
