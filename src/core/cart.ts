@@ -1377,7 +1377,7 @@ export const cart = ({
             ...dummyCheckoutFields,
             ...createCheckoutResUpdated,
           };
-          console.log("vaibhav10")
+          console.log("vaibhav423")
 
           storage.setCheckout(updatedCheckout);
 
