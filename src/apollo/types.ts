@@ -22643,10 +22643,6 @@ export type UserFragment = (
 
 export type PriceFragment = { gross: Pick<Money, 'amount' | 'currency'>, net: Pick<Money, 'amount' | 'currency'> };
 
-export type AddressFragment = (
-  Pick<Address, 'id' | 'firstName' | 'lastName' | 'companyName' | 'streetAddress1' | 'streetAddress2' | 'city' | 'postalCode' | 'countryArea' | 'phone' | 'isDefaultBillingAddress' | 'isDefaultShippingAddress'>
-  & { country: Pick<CountryDisplay, 'code' | 'country'> }
-);
 
 export type ProductVariantFragment = (
   Pick<ProductVariant, 'id' | 'name' | 'sku' | 'quantityAvailable'>
