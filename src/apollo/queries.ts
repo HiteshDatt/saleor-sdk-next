@@ -129,6 +129,7 @@ export const GET_DISCOUNT_CASHBACK_QUERY = gql`
       prepaidDiscount
       couponDiscount
       cashbackDiscount
+      platformCharge
     }
     cashback(checkoutToken: $token) {
       amount

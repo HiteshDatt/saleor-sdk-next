@@ -201,12 +201,13 @@ export const setLocalCheckoutInCache = async (
           prepaidDiscount: checkout?.paymentMethod?.prepaidDiscountAmount,
           couponDiscount: checkout?.paymentMethod?.couponDiscount,
           cashbackDiscount: checkout?.paymentMethod?.cashbackDiscountAmount,
-          platformCharge:checkout?.paymentMethod?.platformChargeAmount
+          platformCharge: checkout?.paymentMethod?.platformChargeAmount
         },
         cashback: checkout?.cashback,
       },
     };
     storage.setDiscounts(resDiscount.data);
+    console.log(resDiscount,"resDiscount");
     client.writeQuery({
       query: GET_LOCAL_CHECKOUT,
       data: {
