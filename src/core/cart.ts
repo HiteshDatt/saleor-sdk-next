@@ -1377,7 +1377,7 @@ export const cart = ({
             ...dummyCheckoutFields,
             ...createCheckoutResUpdated,
           };
-          console.log("vaibhav423")
+          console.log("vaibhav42355")
 
           storage.setCheckout(updatedCheckout);
 
@@ -1390,7 +1390,7 @@ export const cart = ({
                 couponDiscount: updatedCheckout?.paymentMethod?.couponDiscount,
                 cashbackDiscount:
                   updatedCheckout?.paymentMethod?.cashbackDiscountAmount,
-                platfromCharge: updatedCheckout?.paymentMethod?.platformChargeAmount
+                platformCharge: updatedCheckout?.paymentMethod?.platformChargeAmount
               },
               cashback: updatedCheckout?.cashback,
             },
