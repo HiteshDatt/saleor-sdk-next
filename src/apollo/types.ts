@@ -116,6 +116,20 @@ export type AccountCreateInput = {
   redirectUrl?: Maybe<Scalars['String']>;
 };
 
+/** Deactivate's a User. */
+export type AccountDeactivate = {
+  /**
+   * List of errors that occurred executing the mutation.
+   * @deprecated Use typed errors with error codes. This field will be removed after 2020-07-31.
+   */
+  errors: Array<Error>;
+  /** Informs whether users is active. */
+  isActiveUser: Maybe<Scalars['Boolean']>;
+  /** Informs whether user deactivation request is received. */
+  requestReceived: Maybe<Scalars['Boolean']>;
+  accountErrors: Array<AccountError>;
+};
+
 /** Remove user account. */
 export type AccountDelete = {
   /**
@@ -168,7 +182,8 @@ export type AccountErrorCode =
   | 'JWT_DECODE_ERROR'
   | 'JWT_MISSING_TOKEN'
   | 'JWT_INVALID_CSRF_TOKEN'
-  | 'REQUIRE_SUPERUSER_PERMISSION';
+  | 'REQUIRE_SUPERUSER_PERMISSION'
+  | 'INVALID_USER';
 
 export type AccountInput = {
   /** Given name. */
@@ -229,6 +244,8 @@ export type AccountRegisterV2 = {
   isNewUser: Maybe<Scalars['Boolean']>;
   /** Informs whether users is active. */
   isActiveUser: Maybe<Scalars['Boolean']>;
+  /** Success messsage signifying request is processed */
+  message: Maybe<Scalars['String']>;
   accountErrors: Array<AccountError>;
   user: Maybe<User>;
 };
@@ -321,17 +338,6 @@ export type Address = Node & {
   isDefaultShippingAddress: Maybe<Scalars['Boolean']>;
   /** Address is user's default billing address. */
   isDefaultBillingAddress: Maybe<Scalars['Boolean']>;
-};
-
-export type MembershipEdge = {
-  id: Scalars['ID'],
-  isActive: Scalars['Boolean'],
-  membershipDiscount: Scalars['Int'],
-  membershipExpiry: Scalars['String'],
-  membershipPurchase: Scalars['String'],
-  membershipCashbackAmount: Scalars['Int'],
-  membershipAmount: Scalars['Int'],
-  usedVouchers: Array<Scalars['String']>
 };
 
 export type AddressCountableConnection = {
@@ -515,6 +521,7 @@ export type ApiCallsType = Node & {
   description: Maybe<Scalars['String']>;
   apiName: Scalars['String'];
   user: Maybe<User>;
+  app: Maybe<App>;
   actionPerformed: Scalars['String'];
 };
 
@@ -988,10 +995,10 @@ export type ArchiveOrderStatus =
 
 /** Represents an archive order in the shop. */
 export type ArchiveOrderType = Node & ObjectWithMetadata & {
-  /** List of public metadata items. Can be accessed without permissions. */
-  metadata: Array<Maybe<MetadataItem>>;
   /** List of private metadata items.Requires proper staff permissions to access. */
   privateMetadata: Array<Maybe<MetadataItem>>;
+  /** List of public metadata items. Can be accessed without permissions. */
+  metadata: Array<Maybe<MetadataItem>>;
   /** The ID of the object. */
   id: Scalars['ID'];
   foreignOrderId: Scalars['String'];
@@ -1625,6 +1632,8 @@ export type BannerInput = {
   image?: Maybe<Scalars['Upload']>;
   /** banner image for mobile screens */
   imageMobile?: Maybe<Scalars['Upload']>;
+  /** banner image for mobile app screens */
+  imageMobileApp?: Maybe<Scalars['Upload']>;
   /** Id of the related object */
   relatedId?: Maybe<Scalars['ID']>;
   /** Slug of the related object */
@@ -1734,8 +1743,8 @@ export type BlogInput = {
   publicationDate?: Maybe<Scalars['Date']>;
   /** Search engine optimization fields. */
   seo?: Maybe<SeoInput>;
-  /** ID of the product's category. */
-  category?: Maybe<Scalars['ID']>;
+  /** List of IDs of categories to be added to the blog. */
+  categories?: Maybe<Array<Maybe<Scalars['ID']>>>;
 };
 
 export type BlogSortField =
@@ -1813,19 +1822,27 @@ export type BlogType = Node & ObjectWithMetadataV2 & {
   id: Scalars['ID'];
   title: Scalars['String'];
   contentJson: Scalars['JSONString'];
+  /** List of private metadata items.Requires proper staff permissions to access. */
+  privateMetadata: Array<Maybe<MetadataItemV2>>;
   /** List of public metadata items. Can be accessed without permissions. */
   metadata: Array<Maybe<MetadataItemV2>>;
   publicationDate: Maybe<Scalars['Date']>;
   isPublished: Scalars['Boolean'];
-  /** List of private metadata items.Requires proper staff permissions to access. */
-  privateMetadata: Array<Maybe<MetadataItemV2>>;
   slug: Scalars['String'];
   content: Scalars['String'];
   /** Tags */
   tags: Maybe<Array<Maybe<TagType>>>;
-  category: Maybe<Category>;
+  categories: CategoryCountableConnection;
   created: Scalars['DateTime'];
   translations: BlogTranslationCountableConnection;
+};
+
+
+export type BlogTypeCategoriesArgs = {
+  before?: Maybe<Scalars['String']>;
+  after?: Maybe<Scalars['String']>;
+  first?: Maybe<Scalars['Int']>;
+  last?: Maybe<Scalars['Int']>;
 };
 
 
@@ -1871,7 +1888,7 @@ export type BluedartShipmentCreate = {
    */
   errors: Array<Error>;
   /** Combo to which products will be added. */
-  orders: Maybe<Order>;
+  orders: Maybe<Array<Maybe<Order>>>;
 };
 
 export type BulkActionCsvLogsFilterInput = {
@@ -2066,6 +2083,8 @@ export type Category = Node & ObjectWithMetadata & {
   ancestors: Maybe<CategoryCountableConnection>;
   /** List of products in the category. */
   products: Maybe<ProductCountableConnection>;
+  /** List of blogs in the category. */
+  blogs: Maybe<BlogTypeCountableConnection>;
   /**
    * The storefront's URL for the category.
    * @deprecated This field will be removed after 2020-07-31.
@@ -2097,6 +2116,15 @@ export type CategoryAncestorsArgs = {
 
 /** Represents a single category of products. Categories allow to organize products in a tree-hierarchies which can be used for navigation in the storefront. */
 export type CategoryProductsArgs = {
+  before?: Maybe<Scalars['String']>;
+  after?: Maybe<Scalars['String']>;
+  first?: Maybe<Scalars['Int']>;
+  last?: Maybe<Scalars['Int']>;
+};
+
+
+/** Represents a single category of products. Categories allow to organize products in a tree-hierarchies which can be used for navigation in the storefront. */
+export type CategoryBlogsArgs = {
   before?: Maybe<Scalars['String']>;
   after?: Maybe<Scalars['String']>;
   first?: Maybe<Scalars['Int']>;
@@ -2369,6 +2397,8 @@ export type Checkout = Node & ObjectWithMetadata & {
   isShippingRequired: Scalars['Boolean'];
   /** A list of checkout lines, each containing information about an item in the checkout. */
   lines: Maybe<Array<Maybe<CheckoutLine>>>;
+  /** A list of checkout lines, which were discounted an item in the checkout. */
+  discountedLines: Maybe<Array<Maybe<DiscountedCheckoutLine>>>;
   /** The price of the shipping, with all the taxes included. */
   shippingPrice: Maybe<TaxedMoney>;
   /** The price of the checkout before shipping, with taxes included. */
@@ -2387,6 +2417,8 @@ export type Checkout = Node & ObjectWithMetadata & {
   paymentMethod: Maybe<PaymentMethodType>;
   /** Cashback of Checkout. */
   cashback: Maybe<CashbackType>;
+  /** Returns True, if COD needs to be blocked. */
+  blockCod: Maybe<Scalars['Boolean']>;
 };
 
 /** Adds note to the checkout. */
@@ -2511,6 +2543,8 @@ export type CheckoutCreateInput = {
   tags?: Maybe<Array<Maybe<Scalars['String']>>>;
   /** Fields required to update the object's metadata. */
   checkoutMetadataInput?: Maybe<Array<MetadataInputV2>>;
+  /** Recalculate checkout */
+  isRecalculate?: Maybe<Scalars['Boolean']>;
 };
 
 /** Sets the customer as the owner of the checkout. */
@@ -2585,7 +2619,8 @@ export type CheckoutErrorCode =
   | 'ZERO_QUANTITY'
   | 'CHECKOUTS_TOTAL_UNMATCHED'
   | 'RTO_CUSTOMER_FOUND'
-  | 'COD_NOT_APPLICABLE_FOR_PRODUCT_IN_CART';
+  | 'COD_NOT_APPLICABLE_FOR_PRODUCT_IN_CART'
+  | 'PARTIAL_PAYMENT_NOT_APPLICABLE';
 
 export type CheckoutEvent = Node & {
   /** The ID of the object. */
@@ -2612,6 +2647,8 @@ export type CheckoutLine = Node & {
   totalPrice: Maybe<TaxedMoney>;
   /** Indicates whether the item need to be delivered. */
   requiresShipping: Maybe<Scalars['Boolean']>;
+  /** Quantity after a line item is discounted. */
+  quantityAfterDiscount: Maybe<Scalars['Int']>;
 };
 
 export type CheckoutLineCountableConnection = {
@@ -2710,6 +2747,18 @@ export type CheckoutShippingAddressUpdate = {
   checkoutErrors: Array<CheckoutError>;
 };
 
+/** Update shipping address in the existing checkout. */
+export type CheckoutShippingAddressUpdateV2 = {
+  /**
+   * List of errors that occurred executing the mutation.
+   * @deprecated Use typed errors with error codes. This field will be removed after 2020-07-31.
+   */
+  errors: Array<Error>;
+  /** An updated checkout. */
+  checkout: Maybe<Checkout>;
+  checkoutErrors: Array<CheckoutError>;
+};
+
 /** Updates the shipping address of the checkout. */
 export type CheckoutShippingMethodUpdate = {
   /**
@@ -2774,6 +2823,8 @@ export type CheckoutType = Node & ObjectWithMetadata & {
   isShippingRequired: Scalars['Boolean'];
   /** A list of checkout lines, each containing information about an item in the checkout. */
   lines: Maybe<Array<Maybe<CheckoutLine>>>;
+  /** A list of checkout lines, which were discounted an item in the checkout. */
+  discountedLines: Maybe<Array<Maybe<DiscountedCheckoutLine>>>;
   /** The price of the shipping, with all the taxes included. */
   shippingPrice: Maybe<TaxedMoney>;
   /** The price of the checkout before shipping, with taxes included. */
@@ -2792,6 +2843,8 @@ export type CheckoutType = Node & ObjectWithMetadata & {
   paymentMethod: Maybe<PaymentMethodType>;
   /** Cashback of Checkout. */
   cashback: Maybe<CashbackType>;
+  /** Returns True, if COD needs to be blocked. */
+  blockCod: Maybe<Scalars['Boolean']>;
 };
 
 
@@ -2844,6 +2897,18 @@ export type CheckoutUpdatePrivateMeta = {
 export type ChoiceValue = {
   raw: Maybe<Scalars['String']>;
   verbose: Maybe<Scalars['String']>;
+};
+
+/** Create Events for Customers on Clevertap. */
+export type ClevertapCustomersEventCreate = {
+  /**
+   * List of errors that occurred executing the mutation.
+   * @deprecated Use typed errors with error codes. This field will be removed after 2020-07-31.
+   */
+  errors: Array<Error>;
+  /** Success message */
+  message: Maybe<Scalars['String']>;
+  sectionErrors: Array<SectionError>;
 };
 
 /** Represents a collection of products. */
@@ -3908,6 +3973,18 @@ export type CreateJusPayOrderAndCustomer = {
   juspayErrors: Array<JuspayError>;
 };
 
+/** Create Loyality specified in input. */
+export type CreateLoyality = {
+  /**
+   * List of errors that occurred executing the mutation.
+   * @deprecated Use typed errors with error codes. This field will be removed after 2020-07-31.
+   */
+  errors: Array<Error>;
+  /** A Loyality instance. */
+  loyality: Maybe<LoyalityType>;
+  loyalityErrors: Array<LoyalityError>;
+};
+
 /** Create a menu item image. This mutation must be sent as a `multipart` request. More detailed specs of the upload format can be found here: https://github.com/jaydenseric/graphql-multipart-request-spec */
 export type CreateMenuItemsImages = {
   /**
@@ -3941,6 +4018,18 @@ export type CreateNotification = {
   notification: Maybe<NotificationType>;
 };
 
+/** Create bulk orders with csv. */
+export type CreateOrdersCsv = {
+  /**
+   * List of errors that occurred executing the mutation.
+   * @deprecated Use typed errors with error codes. This field will be removed after 2020-07-31.
+   */
+  errors: Array<Error>;
+  /** Success message */
+  message: Maybe<Scalars['String']>;
+  sectionErrors: Array<SectionError>;
+};
+
 /** Creates an order on Payu. */
 export type CreatePayuOrder = {
   /**
@@ -3963,6 +4052,20 @@ export type CreatePincodeCsv = {
   message: Maybe<Scalars['String']>;
 };
 
+/** Create a new Survey with added predefined data. */
+export type CreatePredefinedSurvey = {
+  /**
+   * List of errors that occurred executing the mutation.
+   * @deprecated Use typed errors with error codes. This field will be removed after 2020-07-31.
+   */
+  errors: Array<Error>;
+  /** List of Survey instances. */
+  surveys: Maybe<Array<Maybe<SurveyType>>>;
+  /** Page data */
+  page: Maybe<Array<Maybe<Page>>>;
+  SurveyErrors: Array<SurveyError>;
+};
+
 /** Create Product. */
 export type CreateProductCsv = {
   /**
@@ -3983,6 +4086,8 @@ export type CreateProductReview = {
   errors: Array<Error>;
   /** A product review instance. */
   productReview: Maybe<ProductReviewType>;
+  /** Referrer Discount code for the User */
+  referrerVoucherCode: Maybe<Scalars['String']>;
   productReviewErrors: Array<ProductReviewError>;
 };
 
@@ -4204,6 +4309,26 @@ export type CreditCard = {
   expYear: Maybe<Scalars['Int']>;
 };
 
+/** Credits Wallet to refered user. */
+export type CreditsWalletToReferedUser = {
+  /**
+   * List of errors that occurred executing the mutation.
+   * @deprecated Use typed errors with error codes. This field will be removed after 2020-07-31.
+   */
+  errors: Array<Error>;
+  /** Referrer Wallet Amount Credited. */
+  referrerWalletAmount: Maybe<Scalars['String']>;
+  /** Referrer Discount code for the User */
+  referrerVoucherCode: Maybe<Scalars['String']>;
+  /** Referred Wallet Amount Credited. */
+  referredWalletAmount: Maybe<Scalars['String']>;
+  /** Referred Discount code for the User */
+  referredVoucherCode: Maybe<Scalars['String']>;
+  /** Message for the User */
+  message: Maybe<Scalars['String']>;
+  accountErrors: Array<AccountError>;
+};
+
 export type CronArgumentType = {
   name: Maybe<Scalars['String']>;
   required: Maybe<Scalars['Boolean']>;
@@ -4410,6 +4535,8 @@ export type CrontabScheduleTimezone =
   | 'AMERICA_CIUDAD_JUAREZ'
   /** America/Costa Rica */
   | 'AMERICA_COSTA_RICA'
+  /** America/Coyhaique */
+  | 'AMERICA_COYHAIQUE'
   /** America/Creston */
   | 'AMERICA_CRESTON'
   /** America/Cuiaba */
@@ -4676,8 +4803,6 @@ export type CrontabScheduleTimezone =
   | 'ASIA_BRUNEI'
   /** Asia/Chita */
   | 'ASIA_CHITA'
-  /** Asia/Choibalsan */
-  | 'ASIA_CHOIBALSAN'
   /** Asia/Colombo */
   | 'ASIA_COLOMBO'
   /** Asia/Damascus */
@@ -5149,6 +5274,7 @@ export type CustomBannerType = Node & {
   slug: Scalars['String'];
   image: Maybe<Scalars['String']>;
   imageMobile: Maybe<Scalars['String']>;
+  imageMobileApp: Maybe<Scalars['String']>;
   name: Scalars['String'];
   /** tags associated with the banner */
   contentTags: Maybe<Array<Maybe<Scalars['String']>>>;
@@ -5158,6 +5284,8 @@ export type CustomBannerType = Node & {
   imageUrl: Maybe<Scalars['String']>;
   /** The URL of the image for mobile screens. */
   imageMobileUrl: Maybe<Scalars['String']>;
+  /** The URL of the image for mobile app screens. */
+  imageMobileAppUrl: Maybe<Scalars['String']>;
 };
 
 export type CustomBannerTypeConnection = {
@@ -5460,6 +5588,18 @@ export type DeleteInfluencer = {
   influencerErrors: Array<InfluencerError>;
 };
 
+/** Create loyality specified in input. */
+export type DeleteLoyality = {
+  /**
+   * List of errors that occurred executing the mutation.
+   * @deprecated Use typed errors with error codes. This field will be removed after 2020-07-31.
+   */
+  errors: Array<Error>;
+  /** A loyality instance. */
+  message: Maybe<Scalars['String']>;
+  loyalityErrors: Array<LoyalityError>;
+};
+
 /** Delete metadata of an object. */
 export type DeleteMetadata = {
   /**
@@ -5561,6 +5701,18 @@ export type DeleteVoucherRule = {
   errors: Array<Error>;
   voucherErrors: Array<VoucherError>;
   voucherRule: Maybe<VoucherRuleType>;
+};
+
+/** Delete  voucher rules Link. */
+export type DeleteVoucherRuleLink = {
+  /**
+   * List of errors that occurred executing the mutation.
+   * @deprecated Use typed errors with error codes. This field will be removed after 2020-07-31.
+   */
+  errors: Array<Error>;
+  /** Indicates whether the voucher rule link was deleted successfully. */
+  success: Maybe<Scalars['Boolean']>;
+  voucherErrors: Array<VoucherError>;
 };
 
 export type DeliverySchedulerType = Node & ObjectWithMetadataV2 & {
@@ -5748,6 +5900,13 @@ export type DiscountErrorCode =
   | 'REQUIRED'
   | 'UNIQUE';
 
+export type DiscountInput = {
+  /** Extra Discount amount */
+  amount?: Maybe<Scalars['Decimal']>;
+  /** Reason for the extra discount. */
+  reason?: Maybe<Scalars['String']>;
+};
+
 export type DiscountStatusEnum =
   | 'ACTIVE'
   | 'EXPIRED'
@@ -5760,6 +5919,17 @@ export type DiscountType =
 export type DiscountValueTypeEnum =
   | 'FIXED'
   | 'PERCENTAGE';
+
+export type DiscountedCheckoutLine = {
+  /** The sum of the checkout line price, taxes and discounts. */
+  totalPrice: Maybe<TaxedMoney>;
+  /** Discounted CheckoutLine ID. */
+  id: Scalars['ID'];
+  /** Quantity of item discounted. */
+  quantity: Scalars['Int'];
+  /** sku of variant */
+  variant: Maybe<Scalars['String']>;
+};
 
 export type DiscountsType = {
   couponDiscount: Maybe<Scalars['Decimal']>;
@@ -6194,10 +6364,10 @@ export type EmailTemplateOrderField =
   | 'CREATED_DATE';
 
 export type EmailTemplateType = Node & ObjectWithMetadataV2 & {
-  /** List of public metadata items. Can be accessed without permissions. */
-  metadata: Array<Maybe<MetadataItemV2>>;
   /** List of private metadata items.Requires proper staff permissions to access. */
   privateMetadata: Array<Maybe<MetadataItemV2>>;
+  /** List of public metadata items. Can be accessed without permissions. */
+  metadata: Array<Maybe<MetadataItemV2>>;
   /** The ID of the object. */
   id: Scalars['ID'];
   htmlBody: Scalars['String'];
@@ -6736,6 +6906,15 @@ export type FinalizeEditedOrder = {
   orderErrors: Array<OrderError>;
 };
 
+export type FitrofyType = {
+  /** Check if Customer is eligible for Diet Planner */
+  validCustomer: Maybe<Scalars['Boolean']>;
+  /** Order no. of order containing diet plan */
+  orderId: Maybe<Scalars['Int']>;
+  /** Error messages if any */
+  errorMessage: Maybe<Scalars['String']>;
+};
+
 export type FormExportFilterInput = {
   name?: Maybe<Scalars['String']>;
   email?: Maybe<Scalars['String']>;
@@ -7263,6 +7442,8 @@ export type HostingNoAuthInput = {
   file?: Maybe<Scalars['Upload']>;
   /** File name */
   name: Scalars['String'];
+  /** Name of the file */
+  filename?: Maybe<Scalars['String']>;
 };
 
 export type HostingNoAuthType = Node & {
@@ -7347,8 +7528,8 @@ export type InfluencerInput = {
 };
 
 export type InfluencerType = Node & {
-  metadata: Maybe<Scalars['JSONString']>;
   privateMetadata: Maybe<Scalars['JSONString']>;
+  metadata: Maybe<Scalars['JSONString']>;
   /** The ID of the object. */
   id: Scalars['ID'];
   name: Scalars['String'];
@@ -7428,10 +7609,10 @@ export type IntervalScheduleTypePeriodictaskSetArgs = {
 
 /** Represents an Invoice. */
 export type Invoice = ObjectWithMetadata & Job & Node & {
-  /** The ID of the object. */
-  id: Scalars['ID'];
   /** List of public metadata items. Can be accessed without permissions. */
   metadata: Array<Maybe<MetadataItem>>;
+  /** The ID of the object. */
+  id: Scalars['ID'];
   /** Job status. */
   status: JobStatusEnum;
   number: Maybe<Scalars['String']>;
@@ -7909,6 +8090,73 @@ export type LineRefundInput = {
   amount: Scalars['PositiveDecimal'];
 };
 
+/** An enumeration. */
+export type LoyalityCodes =
+  | 'INVALID'
+  | 'NOT_FOUND';
+
+export type LoyalityError = {
+  /** Name of a field that caused the error. A value of `null` indicates that the error isn't associated with a particular field. */
+  field: Maybe<Scalars['String']>;
+  /** The error message. */
+  message: Maybe<Scalars['String']>;
+  /** The error code. */
+  code: LoyalityCodes;
+};
+
+export type LoyalityInput = {
+  /** Loyality event name */
+  eventName?: Maybe<Scalars['String']>;
+  /** Type of reward for referral */
+  referralRewardType?: Maybe<ReferralRewardType>;
+  /** Type of reward for referred */
+  referredRewardType?: Maybe<ReferredRewardType>;
+  /** Loyality referral coupon name */
+  referralCouponName?: Maybe<Scalars['String']>;
+  /** Loyality referral point */
+  referralPoint?: Maybe<Scalars['String']>;
+  /** Loyality referred coupon name */
+  referredCouponName?: Maybe<Scalars['String']>;
+  /** Loyality referred point */
+  referredPoint?: Maybe<Scalars['String']>;
+  /** Loyality active status */
+  status?: Maybe<Scalars['Boolean']>;
+};
+
+export type LoyalityType = Node & ObjectWithMetadataV2 & {
+  /** List of private metadata items.Requires proper staff permissions to access. */
+  privateMetadata: Array<Maybe<MetadataItemV2>>;
+  /** List of public metadata items. Can be accessed without permissions. */
+  metadata: Array<Maybe<MetadataItemV2>>;
+  /** The ID of the object. */
+  id: Scalars['ID'];
+  eventName: Scalars['String'];
+  status: Maybe<Scalars['Boolean']>;
+  referralRewardType: Maybe<Scalars['String']>;
+  referredRewardType: Maybe<Scalars['String']>;
+  referralCouponName: Maybe<Scalars['String']>;
+  referralPoint: Maybe<Scalars['String']>;
+  referredCouponName: Maybe<Scalars['String']>;
+  referredPoint: Maybe<Scalars['String']>;
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+};
+
+export type LoyalityTypeCountableConnection = {
+  /** Pagination data for this connection. */
+  pageInfo: PageInfo;
+  edges: Array<LoyalityTypeCountableEdge>;
+  /** A total count of items in the collection. */
+  totalCount: Maybe<Scalars['Int']>;
+};
+
+export type LoyalityTypeCountableEdge = {
+  /** The item at the end of the edge. */
+  node: LoyalityType;
+  /** A cursor for use in pagination. */
+  cursor: Scalars['String'];
+};
+
 export type MailType = {
   mailType: Maybe<Scalars['String']>;
   /** email template */
@@ -7951,6 +8199,46 @@ export type MarkAsPaidEditedOrder = {
   /** Order marked as paid. */
   order: Maybe<Order>;
   orderErrors: Array<OrderError>;
+};
+
+export type MemberShipHistoryFilterInput = {
+  user?: Maybe<Scalars['String']>;
+};
+
+export type MemberShipHistoryType = Node & ObjectWithMetadataV2 & {
+  /** The ID of the object. */
+  id: Scalars['ID'];
+  /** List of private metadata items.Requires proper staff permissions to access. */
+  privateMetadata: Array<Maybe<MetadataItemV2>>;
+  /** List of public metadata items. Can be accessed without permissions. */
+  metadata: Array<Maybe<MetadataItemV2>>;
+  membershipPurchase: Scalars['DateTime'];
+  membershipExpiry: Scalars['DateTime'];
+  user: Maybe<User>;
+  isActive: Scalars['Boolean'];
+  membershipCashbackAmount: Maybe<Scalars['Float']>;
+  membershipFreeShipping: Maybe<Scalars['Float']>;
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  membershipAmount: Maybe<Scalars['Float']>;
+  membershipCashbackDiscount: Maybe<Scalars['Float']>;
+  membershipDiscount: Maybe<Scalars['Float']>;
+  usedVouchers: Maybe<Array<Maybe<Scalars['String']>>>;
+};
+
+export type MemberShipHistoryTypeCountableConnection = {
+  /** Pagination data for this connection. */
+  pageInfo: PageInfo;
+  edges: Array<MemberShipHistoryTypeCountableEdge>;
+  /** A total count of items in the collection. */
+  totalCount: Maybe<Scalars['Int']>;
+};
+
+export type MemberShipHistoryTypeCountableEdge = {
+  /** The item at the end of the edge. */
+  node: MemberShipHistoryType;
+  /** A cursor for use in pagination. */
+  cursor: Scalars['String'];
 };
 
 /** Represents a single menu - an object that is used to help navigate through the store. */
@@ -8439,6 +8727,18 @@ export type MetadataErrorCode =
   | 'INVALID'
   | 'NOT_FOUND'
   | 'REQUIRED';
+
+export type MetadataFilterInput = {
+  /** Metadata field to filter by (key). */
+  field: Scalars['String'];
+  /** Value of the metadata field (optional). */
+  value?: Maybe<Scalars['String']>;
+};
+
+export type MetadataFilterListInput = {
+  /** List of metadata filters as key-value pairs. */
+  metalist: Array<MetadataFilterInput>;
+};
 
 export type MetadataInput = {
   /** Key of a metadata item. */
@@ -9051,6 +9351,8 @@ export type Mutation = {
    * @deprecated Use the `deletePrivateMetadata` mutation. This field will be removed after 2020-07-31.
    */
   checkoutClearPrivateMetadata: Maybe<CheckoutClearPrivateMeta>;
+  /** Update shipping address in the existing checkout. */
+  checkoutShippingAddressUpdateV2: Maybe<CheckoutShippingAddressUpdateV2>;
   /** Creates a new app. */
   appCreate: Maybe<AppCreate>;
   /** Updates an existing app. */
@@ -9299,6 +9601,8 @@ export type Mutation = {
   voucherRuleLinkCreate: Maybe<CreateVoucherRuleLink>;
   /** Update a voucher rule link. */
   voucherRuleLinkUpdate: Maybe<UpdateVoucherRuleLink>;
+  /** Delete  voucher rules Link. */
+  voucherRuleLinkDelete: Maybe<DeleteVoucherRuleLink>;
   /** Set the payment method of checkout */
   checkoutPaymentMethodUpdate: Maybe<UpdatePaymentMethod>;
   /** Upload an invoice pdf. */
@@ -9355,6 +9659,10 @@ export type Mutation = {
   surveyCreate: Maybe<SurveyCreate>;
   /** Delete Survey. */
   surveyDelete: Maybe<SurveyDelete>;
+  /** Update Survey. */
+  surveyUpdate: Maybe<SurveyUpdate>;
+  /** Delete Survey Questions with Answers. */
+  surveyQuestionsDelete: Maybe<SurveyQuestionsDelete>;
   /** Fill Survey. */
   surveyFill: Maybe<SurveyFill>;
   /** Fill Survey. */
@@ -9471,8 +9779,14 @@ export type Mutation = {
   referAFriend: Maybe<ReferAFriend>;
   /** Creates Coupon Code for referd user. */
   getReferalDiscount: Maybe<GetReferalDiscount>;
+  /** Credits Wallet to refered user. */
+  creditsWalletToReferedUser: Maybe<CreditsWalletToReferedUser>;
+  /** Creates Refer Hash for user. */
+  referalGetHash: Maybe<ReferalGetHash>;
   /** Add Wallet Balance of a user from a csv file */
   walletBalanceAddCsv: Maybe<WalletBalanceAddCsv>;
+  /** Add Wallet Balance of a user for some particular reasons. */
+  walletBalanceAdd: Maybe<WalletBalanceAdd>;
   /** Export orders to csv file. */
   walletExport: Maybe<ExportWallet>;
   /** Upload Images of a product. */
@@ -9569,6 +9883,36 @@ export type Mutation = {
   assignContentTags: Maybe<AssignContentTags>;
   /** UnAssigns ContentTags of the object. */
   unassignedContentTags: Maybe<UnAssignContentTags>;
+  /** Creates a new OrderEventHistory. */
+  orderEventHistoryCreate: Maybe<OrderEventHistoryCreate>;
+  /** Updates an existing OrderEventHistory. */
+  orderEventHistoryUpdate: Maybe<OrderEventHistoryUpdate>;
+  /** Deletes a OrderEventHistory. */
+  orderEventHistoryDelete: Maybe<OrderEventHistoryDelete>;
+  /** Create Loyality specified in input. */
+  createLoyality: Maybe<CreateLoyality>;
+  /** Update Loyality data. */
+  updateLoyality: Maybe<UpdateLoyality>;
+  /** Create loyality specified in input. */
+  deleteLoyality: Maybe<DeleteLoyality>;
+  /** Update Staff Warehouse. */
+  updateStaffWarehouse: Maybe<UpdateStaffWarehouse>;
+  /** Cancel bulk orders with csv. */
+  orderBulkCancelCsv: Maybe<OrderBulkCancelCsv>;
+  /** Create bulk orders with csv. */
+  createOrderCsv: Maybe<CreateOrdersCsv>;
+  /** Create Events for Customers on Clevertap. */
+  clevertapCustomersEventCreate: Maybe<ClevertapCustomersEventCreate>;
+  /** Deactivate's a User. */
+  accountDeactivate: Maybe<AccountDeactivate>;
+  /** Create a new Survey with added predefined data. */
+  createPredefinedSurvey: Maybe<CreatePredefinedSurvey>;
+  /** Update Predefined Survey (can be used for adding sub-survey/sub-quiz data). */
+  updatePredefinedSurvey: Maybe<UpdatePredefinedSurvey>;
+  /** Update bulk order status with csv. */
+  orderBulkStatusUpdate: Maybe<OrderBulkStatusUpdate>;
+  /** bulk order push on shopify with csv. */
+  pushOrderOnShopify: Maybe<PushOrderOnShopify>;
 };
 
 
@@ -10367,6 +10711,7 @@ export type MutationOrderAddNoteArgs = {
 
 export type MutationOrderCancelArgs = {
   id: Scalars['ID'];
+  notify?: Maybe<Scalars['Boolean']>;
 };
 
 
@@ -10483,6 +10828,7 @@ export type MutationOrderBulkCaptureArgs = {
 export type MutationOrderLineRefundArgs = {
   id: Scalars['ID'];
   input?: Maybe<Array<Maybe<LineRefundInput>>>;
+  onWallet?: Maybe<Scalars['Boolean']>;
 };
 
 
@@ -10742,6 +11088,7 @@ export type MutationCheckoutBillingAddressUpdateArgs = {
 
 export type MutationCheckoutCompleteArgs = {
   checkoutId: Scalars['ID'];
+  discount?: Maybe<DiscountInput>;
   paymentData?: Maybe<Scalars['JSONString']>;
   redirectUrl?: Maybe<Scalars['String']>;
   storeSource?: Maybe<Scalars['Boolean']>;
@@ -10774,6 +11121,7 @@ export type MutationCheckoutEmailUpdateArgs = {
 export type MutationCheckoutLineDeleteArgs = {
   checkoutId: Scalars['ID'];
   checkoutMetadataInput?: Maybe<Array<MetadataInputV2>>;
+  isRecalculate?: Maybe<Scalars['Boolean']>;
   lineId?: Maybe<Scalars['ID']>;
 };
 
@@ -10812,6 +11160,7 @@ export type MutationCheckoutShippingAddressUpdateArgs = {
   email?: Maybe<Scalars['String']>;
   isRecalculate?: Maybe<Scalars['Boolean']>;
   shippingAddress: AddressInput;
+  shippingMethodId?: Maybe<Scalars['ID']>;
 };
 
 
@@ -10843,6 +11192,13 @@ export type MutationCheckoutUpdatePrivateMetadataArgs = {
 export type MutationCheckoutClearPrivateMetadataArgs = {
   id: Scalars['ID'];
   input: MetaPath;
+};
+
+
+export type MutationCheckoutShippingAddressUpdateV2Args = {
+  checkoutId: Scalars['ID'];
+  shippingAddress: AddressInput;
+  shippingMethodId?: Maybe<Scalars['ID']>;
 };
 
 
@@ -11410,10 +11766,16 @@ export type MutationVoucherRuleLinkUpdateArgs = {
 };
 
 
+export type MutationVoucherRuleLinkDeleteArgs = {
+  id: Scalars['ID'];
+};
+
+
 export type MutationCheckoutPaymentMethodUpdateArgs = {
   checkoutId: Scalars['ID'];
   gatewayId: Scalars['String'];
   isRecalculate?: Maybe<Scalars['Boolean']>;
+  partialPayment?: Maybe<Scalars['Boolean']>;
   useCashback: Scalars['Boolean'];
 };
 
@@ -11559,6 +11921,20 @@ export type MutationSurveyCreateArgs = {
 
 export type MutationSurveyDeleteArgs = {
   id: Scalars['ID'];
+};
+
+
+export type MutationSurveyUpdateArgs = {
+  input?: Maybe<SurveyUpdateInput>;
+  questions?: Maybe<Array<Maybe<SurveyQuestionInput>>>;
+  surveyId: Scalars['ID'];
+};
+
+
+export type MutationSurveyQuestionsDeleteArgs = {
+  questionIds: Array<Maybe<Scalars['ID']>>;
+  surveyHash: Scalars['String'];
+  surveyId: Scalars['ID'];
 };
 
 
@@ -11872,8 +12248,25 @@ export type MutationGetReferalDiscountArgs = {
 };
 
 
+export type MutationCreditsWalletToReferedUserArgs = {
+  email: Scalars['String'];
+  referHash: Scalars['String'];
+};
+
+
+export type MutationReferalGetHashArgs = {
+  email: Scalars['String'];
+};
+
+
 export type MutationWalletBalanceAddCsvArgs = {
   input: WalletCsvInput;
+};
+
+
+export type MutationWalletBalanceAddArgs = {
+  email: Scalars['String'];
+  reason: Scalars['String'];
 };
 
 
@@ -12132,6 +12525,86 @@ export type MutationUnassignedContentTagsArgs = {
   input: ContentTagInput;
 };
 
+
+export type MutationOrderEventHistoryCreateArgs = {
+  input: OrderEventHistoryInput;
+};
+
+
+export type MutationOrderEventHistoryUpdateArgs = {
+  id: Scalars['ID'];
+  input: OrderEventHistoryInput;
+};
+
+
+export type MutationOrderEventHistoryDeleteArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type MutationCreateLoyalityArgs = {
+  input: LoyalityInput;
+};
+
+
+export type MutationUpdateLoyalityArgs = {
+  id: Scalars['ID'];
+  input: LoyalityInput;
+};
+
+
+export type MutationDeleteLoyalityArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type MutationUpdateStaffWarehouseArgs = {
+  id: Scalars['ID'];
+  input: StaffWarehouseInput;
+};
+
+
+export type MutationOrderBulkCancelCsvArgs = {
+  csvFile: Scalars['Upload'];
+};
+
+
+export type MutationCreateOrderCsvArgs = {
+  csvFile: Scalars['Upload'];
+};
+
+
+export type MutationClevertapCustomersEventCreateArgs = {
+  csvFile: Scalars['Upload'];
+};
+
+
+export type MutationCreatePredefinedSurveyArgs = {
+  customerIds?: Maybe<Array<Maybe<Scalars['ID']>>>;
+  input: SurveyInput;
+  orderIds?: Maybe<Array<Maybe<Scalars['ID']>>>;
+  pageSlug: Scalars['String'];
+  type?: Maybe<Scalars['String']>;
+};
+
+
+export type MutationUpdatePredefinedSurveyArgs = {
+  input?: Maybe<SurveyUpdateInput>;
+  pageSlug: Scalars['String'];
+  subField: Scalars['String'];
+  surveyId: Scalars['ID'];
+};
+
+
+export type MutationOrderBulkStatusUpdateArgs = {
+  csvFile: Scalars['Upload'];
+};
+
+
+export type MutationPushOrderOnShopifyArgs = {
+  csvFile: Scalars['Upload'];
+};
+
 export type NameTranslationInput = {
   name?: Maybe<Scalars['String']>;
 };
@@ -12228,7 +12701,8 @@ export type OtpErrorCodeEnum =
   | 'INVALID_PHONE'
   | 'INVALID_EMAIL'
   | 'INVALID_OTP'
-  | 'MAX_RETRY';
+  | 'MAX_RETRY'
+  | 'OTP_RATE_LIMIT';
 
 export type ObjectWithMetadata = {
   /** List of private metadata items.Requires proper staff permissions to access. */
@@ -12342,6 +12816,10 @@ export type Order = Node & ObjectWithMetadata & {
   parentOrderId: Maybe<Scalars['ID']>;
   /** AWB No for order. It is implemented for Uniware only. */
   awbNo: Maybe<Scalars['String']>;
+  /** List of order extra data's. */
+  extraData: Maybe<Array<Maybe<OrderExtraData>>>;
+  /** A list of checkout lines, which were discounted an item in the checkout. */
+  discountedLines: Maybe<Array<Maybe<DiscountedCheckoutLine>>>;
 };
 
 export type OrderAction =
@@ -12385,6 +12863,18 @@ export type OrderBulkCancel = {
   orderErrors: Array<OrderError>;
 };
 
+/** Cancel bulk orders with csv. */
+export type OrderBulkCancelCsv = {
+  /**
+   * List of errors that occurred executing the mutation.
+   * @deprecated Use typed errors with error codes. This field will be removed after 2020-07-31.
+   */
+  errors: Array<Error>;
+  /** Success message */
+  message: Maybe<Scalars['String']>;
+  sectionErrors: Array<SectionError>;
+};
+
 /** Capture list of order's. */
 export type OrderBulkCapture = {
   /**
@@ -12397,6 +12887,18 @@ export type OrderBulkCapture = {
   orderErrors: Array<OrderError>;
 };
 
+/** Update bulk order status with csv. */
+export type OrderBulkStatusUpdate = {
+  /**
+   * List of errors that occurred executing the mutation.
+   * @deprecated Use typed errors with error codes. This field will be removed after 2020-07-31.
+   */
+  errors: Array<Error>;
+  /** Success message */
+  message: Maybe<Scalars['String']>;
+  sectionErrors: Array<SectionError>;
+};
+
 /** Cancel an order. */
 export type OrderCancel = {
   /**
@@ -12406,6 +12908,8 @@ export type OrderCancel = {
   errors: Array<Error>;
   /** Canceled order. */
   order: Maybe<Order>;
+  /** message */
+  message: Maybe<Scalars['String']>;
   orderErrors: Array<OrderError>;
 };
 
@@ -12589,6 +13093,109 @@ export type OrderEventCountableEdge = {
   cursor: Scalars['String'];
 };
 
+export type OrderEventHistory = Node & {
+  /** The ID of the object. */
+  id: Scalars['ID'];
+  order: Order;
+  user: Maybe<User>;
+  fulfillment: Maybe<Fulfillment>;
+  created: Scalars['DateTime'];
+  awbNumber: Maybe<Scalars['String']>;
+  message: Maybe<Scalars['String']>;
+  emailType: Maybe<Scalars['String']>;
+  /** Order event type. */
+  type: Maybe<Scalars['String']>;
+};
+
+export type OrderEventHistoryCountableConnection = {
+  /** Pagination data for this connection. */
+  pageInfo: PageInfo;
+  edges: Array<OrderEventHistoryCountableEdge>;
+  /** A total count of items in the collection. */
+  totalCount: Maybe<Scalars['Int']>;
+};
+
+export type OrderEventHistoryCountableEdge = {
+  /** The item at the end of the edge. */
+  node: OrderEventHistory;
+  /** A cursor for use in pagination. */
+  cursor: Scalars['String'];
+};
+
+/** Creates a new OrderEventHistory. */
+export type OrderEventHistoryCreate = {
+  /**
+   * List of errors that occurred executing the mutation.
+   * @deprecated Use typed errors with error codes. This field will be removed after 2020-07-31.
+   */
+  errors: Array<Error>;
+  /** A OrderEventHistory instance. */
+  orderEventHistory: Maybe<OrderEventHistory>;
+  orderErrors: Array<OrderError>;
+};
+
+/** Deletes a OrderEventHistory. */
+export type OrderEventHistoryDelete = {
+  /**
+   * List of errors that occurred executing the mutation.
+   * @deprecated Use typed errors with error codes. This field will be removed after 2020-07-31.
+   */
+  errors: Array<Error>;
+  /** Success message */
+  message: Maybe<Scalars['String']>;
+  orderErrors: Array<OrderError>;
+};
+
+export type OrderEventHistoryField =
+  | 'created'
+  | 'AWB_NUMBER'
+  | 'ORDER'
+  | 'USER';
+
+export type OrderEventHistoryFilterInput = {
+  search?: Maybe<Scalars['String']>;
+  created?: Maybe<DateRangeInput>;
+  awbNumber?: Maybe<Scalars['String']>;
+  type?: Maybe<OrderEventsEnum>;
+  fulfillment?: Maybe<Scalars['ID']>;
+  order?: Maybe<Scalars['String']>;
+  user?: Maybe<Scalars['String']>;
+};
+
+export type OrderEventHistoryInput = {
+  /** order awb number. */
+  awbNumber?: Maybe<Scalars['String']>;
+  /** order event message. */
+  message?: Maybe<Scalars['String']>;
+  /** Type of OrderEvent */
+  type: Scalars['String'];
+  /** ID of the Order. */
+  order: Scalars['ID'];
+  /** ID of the User. */
+  user?: Maybe<Scalars['ID']>;
+  /** ID of the Fulfillment. */
+  fulfillment?: Maybe<Scalars['ID']>;
+};
+
+export type OrderEventHistorySoringInput = {
+  /** Specifies the direction in which to sort products. */
+  direction: OrderDirection;
+  /** Sort OrderEventHistory by the selected field. */
+  field: OrderEventHistoryField;
+};
+
+/** Updates an existing OrderEventHistory. */
+export type OrderEventHistoryUpdate = {
+  /**
+   * List of errors that occurred executing the mutation.
+   * @deprecated Use typed errors with error codes. This field will be removed after 2020-07-31.
+   */
+  errors: Array<Error>;
+  /** A OrderEventHistory instance. */
+  orderEvent: Maybe<OrderEventHistory>;
+  orderErrors: Array<OrderError>;
+};
+
 export type OrderEventOrderLineObject = {
   /** The variant quantity. */
   quantity: Maybe<Scalars['Int']>;
@@ -12639,11 +13246,26 @@ export type OrderEventsEnum =
   | 'TRACKING_UPDATED'
   | 'NOTE_ADDED'
   | 'OTHER'
-  | 'ORDER_EDITED';
+  | 'ORDER_EDITED'
+  | 'ORDER_CLONE';
 
 export type OrderExportFilterInput = {
   created?: Maybe<DateRangeInput>;
   tags?: Maybe<TagsListInput>;
+  metadata?: Maybe<MetadataFilterListInput>;
+};
+
+/** Represents extra Data of an order in the shop. */
+export type OrderExtraData = {
+  key: Scalars['String'];
+  value: Scalars['String'];
+  id: Scalars['ID'];
+  order: Order;
+};
+
+export type OrderExtraDataType = {
+  key: Scalars['String'];
+  value: Scalars['String'];
 };
 
 export type OrderFieldEnum =
@@ -12668,7 +13290,13 @@ export type OrderFieldEnum =
   | 'AWB'
   | 'SHIPROCKET_STATUS'
   | 'PAYMENT_ID'
-  | 'TAGS';
+  | 'TAGS'
+  | 'CITY'
+  | 'STATE'
+  | 'ORDER_STATUS'
+  | 'ORDER_SOURCE'
+  | 'CUSTOMER_TAG'
+  | 'ORDER_PRODUCT_TAG';
 
 export type OrderFilterInput = {
   paymentStatus?: Maybe<Array<Maybe<PaymentChargeStatusEnum>>>;
@@ -12683,6 +13311,8 @@ export type OrderFilterInput = {
   invoiceDate?: Maybe<DateRangeInput>;
   excludeDiscarded?: Maybe<Scalars['Boolean']>;
   customerEmail?: Maybe<Scalars['String']>;
+  warehouseIds?: Maybe<Array<Maybe<Scalars['String']>>>;
+  warehouseFilterByAdmin?: Maybe<Array<Maybe<Scalars['String']>>>;
 };
 
 /** Creates new fulfillments for an order. */
@@ -12749,6 +13379,8 @@ export type OrderLine = Node & {
   allocations: Maybe<Array<Allocation>>;
   quantityAfterRefund: Maybe<Scalars['Int']>;
   amountAfterRefund: Maybe<Scalars['Decimal']>;
+  /** Quantity after a line item is discounted. */
+  quantityAfterDiscount: Maybe<Scalars['Int']>;
 };
 
 
@@ -12954,6 +13586,7 @@ export type Page = Node & ObjectWithMetadata & {
   contentJson: Scalars['JSONString'];
   publicationDate: Maybe<Scalars['Date']>;
   slug: Scalars['String'];
+  pageType: Scalars['String'];
   created: Scalars['DateTime'];
   /** List of private metadata items.Requires proper staff permissions to access. */
   privateMetadata: Array<Maybe<MetadataItem>>;
@@ -13068,6 +13701,7 @@ export type PageErrorCode =
 
 export type PageFilterInput = {
   search?: Maybe<Scalars['String']>;
+  pageType?: Maybe<Scalars['String']>;
 };
 
 /** The Relay compliant `PageInfo` type, containing data necessary to paginate this connection. */
@@ -13085,6 +13719,8 @@ export type PageInfo = {
 export type PageInput = {
   /** Page internal name. */
   slug?: Maybe<Scalars['String']>;
+  /** Page type name. */
+  pageType?: Maybe<Scalars['String']>;
   /** Page title. */
   title?: Maybe<Scalars['String']>;
   /** Page content. May consist of ordinary text, HTML and images. */
@@ -13642,6 +14278,8 @@ export type PaymentMethodType = Node & ObjectWithMetadata & {
   cashbackDiscountAmount: Scalars['Float'];
   gateway: Scalars['String'];
   useCashback: Scalars['Boolean'];
+  partialPayment: Scalars['Boolean'];
+  platformChargeAmount: Scalars['Float'];
   created: Scalars['DateTime'];
   updated: Scalars['DateTime'];
   /** List of private metadata items.Requires proper staff permissions to access. */
@@ -13659,7 +14297,6 @@ export type PaymentMethodType = Node & ObjectWithMetadata & {
    */
   meta: Array<Maybe<MetaStore>>;
   couponDiscount: Maybe<Scalars['String']>;
-  platformChargeAmount: Scalars['Float'];
 };
 
 /** Refunds the captured payment amount. */
@@ -13933,7 +14570,8 @@ export type PermissionEnum =
   | 'MANAGE_SHIPPING'
   | 'MANAGE_SETTINGS'
   | 'MANAGE_TRANSLATIONS'
-  | 'MANAGE_CHECKOUTS';
+  | 'MANAGE_CHECKOUTS'
+  | 'MANAGE_PAYMENTS';
 
 /** Create new permission group. */
 export type PermissionGroupCreate = {
@@ -14408,6 +15046,8 @@ export type ProductCreateInput = {
   basePrice?: Maybe<Scalars['PositiveDecimal']>;
   /** Determines if product is visible in product listings (doesn't apply to product collections). */
   visibleInListings?: Maybe<Scalars['Boolean']>;
+  /** Search sold score of the product. */
+  searchSoldScore?: Maybe<Scalars['Int']>;
   /** ID of the type that product belongs to. */
   productType: Scalars['ID'];
   /** Stocks of a product available for sale. Note: this field is only used if a product doesn't use variants. */
@@ -14501,6 +15141,7 @@ export type ProductFilterInput = {
   productTypes?: Maybe<Array<Maybe<Scalars['ID']>>>;
   searchAdmin?: Maybe<Scalars['String']>;
   ids?: Maybe<Array<Maybe<Scalars['ID']>>>;
+  visibleInListings?: Maybe<Scalars['Boolean']>;
 };
 
 /** Represents a product image. */
@@ -14641,6 +15282,8 @@ export type ProductInput = {
   basePrice?: Maybe<Scalars['PositiveDecimal']>;
   /** Determines if product is visible in product listings (doesn't apply to product collections). */
   visibleInListings?: Maybe<Scalars['Boolean']>;
+  /** Search sold score of the product. */
+  searchSoldScore?: Maybe<Scalars['Int']>;
 };
 
 export type ProductOrder = {
@@ -14675,7 +15318,11 @@ export type ProductOrderField =
   /** Sort products by collection. Note: This option is available only for the `Collection.products` query. */
   | 'COLLECTION'
   /** Sort products by Search by sold score */
-  | 'SEARCH_SOLD_SCORE';
+  | 'SEARCH_SOLD_SCORE'
+  /** Sort products by discount (cost price - price). */
+  | 'DISCOUNT'
+  /** Sort products by average product rating. */
+  | 'RATING';
 
 /** Represents availability of a product in the storefront. */
 export type ProductPricingInfo = {
@@ -14718,6 +15365,8 @@ export type ProductReviewFilterInput = {
   rating?: Maybe<RatingRangeInput>;
   source?: Maybe<Scalars['String']>;
   search?: Maybe<Scalars['String']>;
+  productSlug?: Maybe<Scalars['String']>;
+  pictures?: Maybe<Scalars['Boolean']>;
 };
 
 /** Create a product_review image. This mutation must be sent as a `multipart` request. More detailed specs of the upload format can be found here: https://github.com/jaydenseric/graphql-multipart-request-spec */
@@ -14823,6 +15472,8 @@ export type ProductReviewInput = {
   helpfulRatings?: Maybe<Scalars['Int']>;
   /** helpful reviews */
   encryptedToken?: Maybe<Scalars['String']>;
+  /** Age of the reviewer */
+  age?: Maybe<Scalars['String']>;
 };
 
 export type ProductReviewOrder = {
@@ -14863,10 +15514,10 @@ export type ProductReviewSortOrders =
   | 'PUBLISHED_DATE_OLDEST';
 
 export type ProductReviewType = Node & ObjectWithMetadataV2 & {
-  /** List of public metadata items. Can be accessed without permissions. */
-  metadata: Array<Maybe<MetadataItemV2>>;
   /** List of private metadata items.Requires proper staff permissions to access. */
   privateMetadata: Array<Maybe<MetadataItemV2>>;
+  /** List of public metadata items. Can be accessed without permissions. */
+  metadata: Array<Maybe<MetadataItemV2>>;
   /** The ID of the object. */
   id: Scalars['ID'];
   user: Maybe<User>;
@@ -14888,6 +15539,7 @@ export type ProductReviewType = Node & ObjectWithMetadataV2 & {
   helpfulRatings: Scalars['Int'];
   unhelpfulRatings: Scalars['Int'];
   source: Maybe<Scalars['String']>;
+  age: Maybe<Scalars['String']>;
   images: ProductReviewImageTypeConnection;
   videos: ProductReviewVideoTypeConnection;
   rated: Maybe<Scalars['String']>;
@@ -15336,6 +15988,7 @@ export type ProductVariant = Node & ObjectWithMetadata & {
   sku: Scalars['String'];
   product: Product;
   trackInventory: Scalars['Boolean'];
+  enableVariant: Scalars['Boolean'];
   weight: Maybe<Weight>;
   /** List of private metadata items.Requires proper staff permissions to access. */
   privateMetadata: Array<Maybe<MetadataItem>>;
@@ -15399,6 +16052,8 @@ export type ProductVariant = Node & ObjectWithMetadata & {
   quantityAvailable: Scalars['Int'];
   /** List of selective public metadata items . */
   customMetaData: Maybe<Array<Maybe<MetadataItem>>>;
+  /** Profit margin percentage of the product variant. */
+  profitMarginPercentage: Maybe<Scalars['Decimal']>;
 };
 
 
@@ -15450,6 +16105,8 @@ export type ProductVariantBulkCreateInput = {
   sku: Scalars['String'];
   /** Determines if the inventory of this variant should be tracked. If false, the quantity won't change when customers buy this item. */
   trackInventory?: Maybe<Scalars['Boolean']>;
+  /** Enable or disable this product variant. */
+  enableVariant?: Maybe<Scalars['Boolean']>;
   /** Weight of the Product Variant. */
   weight?: Maybe<Scalars['WeightScalar']>;
   /** Stocks of a product available for sale. */
@@ -15538,6 +16195,8 @@ export type ProductVariantCreateInput = {
   sku?: Maybe<Scalars['String']>;
   /** Determines if the inventory of this variant should be tracked. If false, the quantity won't change when customers buy this item. */
   trackInventory?: Maybe<Scalars['Boolean']>;
+  /** Enable or disable this product variant. */
+  enableVariant?: Maybe<Scalars['Boolean']>;
   /** Weight of the Product Variant. */
   weight?: Maybe<Scalars['WeightScalar']>;
   /** Product ID of which type is the variant. */
@@ -15586,6 +16245,8 @@ export type ProductVariantInput = {
   sku?: Maybe<Scalars['String']>;
   /** Determines if the inventory of this variant should be tracked. If false, the quantity won't change when customers buy this item. */
   trackInventory?: Maybe<Scalars['Boolean']>;
+  /** Enable or disable this product variant. */
+  enableVariant?: Maybe<Scalars['Boolean']>;
   /** Weight of the Product Variant. */
   weight?: Maybe<Scalars['WeightScalar']>;
 };
@@ -15748,6 +16409,18 @@ export type PushAllToWareIq = {
   orderErrors: Array<OrderError>;
 };
 
+/** bulk order push on shopify with csv. */
+export type PushOrderOnShopify = {
+  /**
+   * List of errors that occurred executing the mutation.
+   * @deprecated Use typed errors with error codes. This field will be removed after 2020-07-31.
+   */
+  errors: Array<Error>;
+  /** Success message */
+  message: Maybe<Scalars['String']>;
+  sectionErrors: Array<SectionError>;
+};
+
 /** Upload list of risk orders. */
 export type PushRiskOrderCsv = {
   /**
@@ -15804,6 +16477,8 @@ export type Query = {
   banners: Maybe<CustomBannerTypeConnection>;
   /** Look up a blog by ID or slug. */
   blog: Maybe<BlogType>;
+  /** Look up a blog by slug. */
+  blogSlugs: Maybe<Array<Maybe<BlogType>>>;
   /** List of the shop's blogs. */
   blogs: Maybe<BlogTypeCountableConnection>;
   bulkAction: Maybe<BulkActionCsvLogsTypeCountableConnection>;
@@ -15870,6 +16545,7 @@ export type Query = {
   feed: Maybe<FeedType>;
   feeds: Maybe<FeedTypeCountableConnection>;
   filterCheckouts: Maybe<CheckoutTypeCountableConnection>;
+  fitrofy: Maybe<FitrofyType>;
   freeCheckoutLines: Maybe<Array<Maybe<CheckoutLine>>>;
   genericFormName: Maybe<Array<Maybe<FormNameType>>>;
   genericForms: Maybe<GenericFormTypeCountableConnection>;
@@ -15892,9 +16568,12 @@ export type Query = {
   localCashback: Maybe<CashbackType>;
   localCheckout: Maybe<Checkout>;
   localCheckoutDiscounts: Maybe<DiscountsType>;
+  loyality: Maybe<LoyalityType>;
+  loyalties: Maybe<LoyalityTypeCountableConnection>;
   mailTypes: Maybe<MailTypeList>;
   /** Return the currently authenticated user. */
   me: Maybe<User>;
+  memebershipHistories: Maybe<MemberShipHistoryTypeCountableConnection>;
   /** Look up a navigation menu by ID or name. */
   menu: Maybe<Menu>;
   /** Look up a menu item by ID. */
@@ -15915,8 +16594,15 @@ export type Query = {
   omsShipment: Maybe<Array<Maybe<ShipmentType>>>;
   /** Look up an order by ID. */
   order: Maybe<Order>;
+  /** Look up an order by checkout token token. */
+  orderByCheckoutToken: Maybe<Order>;
   /** Look up an order by token. */
   orderByToken: Maybe<Order>;
+  orderEvent: Maybe<OrderEventHistory>;
+  /** List of the storefront's menus. */
+  orderEventAll: Maybe<OrderEventHistoryCountableConnection>;
+  /** Retrieve all key-value pairs from OrderExtraData for a given order. */
+  orderExtraData: Maybe<Array<Maybe<OrderExtraDataType>>>;
   orderLineItemPrice: Maybe<Array<Maybe<LineItemPriceType>>>;
   orderStatus: Maybe<CustomOrderStatus>;
   /** List of orders. */
@@ -15927,6 +16613,7 @@ export type Query = {
   ordersTotalv2: Maybe<TaxedMoney>;
   /** List of orders and their count. */
   ordersV2: Maybe<OrderCountableConnection>;
+  ordersWithTreeForUser: Maybe<Array<Maybe<Scalars['ID']>>>;
   /** Look up a page by ID or slug. */
   page: Maybe<Page>;
   /** Look up a page by ID or slug. */
@@ -15968,6 +16655,8 @@ export type Query = {
   productReviewsAll: Maybe<ProductReviewTypeCountableConnection>;
   /** Look up a productVariant by sku. */
   productSkus: Maybe<Array<Maybe<ProductVariant>>>;
+  /** Look up a product by slug. */
+  productSlug: Maybe<Array<Maybe<Product>>>;
   /** Look up a product type by ID. */
   productType: Maybe<ProductType>;
   /** List of the shop's product types. */
@@ -16035,6 +16724,7 @@ export type Query = {
   translation: Maybe<TranslatableItem>;
   /** Returns a list of all translatable items of a given kind. */
   translations: Maybe<TranslatableItemConnection>;
+  treeAttributesForOrder: Maybe<TreeAttributesType>;
   /** TriggerCron arguments data */
   triggerCrons: Maybe<Array<Maybe<TriggerCronsType>>>;
   useCashback: Scalars['Boolean'];
@@ -16042,6 +16732,7 @@ export type Query = {
   user: Maybe<User>;
   userCheckoutLoading: Scalars['Boolean'];
   userExists: Maybe<UserExistsType>;
+  userOrders: Maybe<UserOrders>;
   userWalletBalance: Scalars['Float'];
   users: Maybe<User>;
   /** Look up a voucher by ID. */
@@ -16185,7 +16876,13 @@ export type QueryBlogArgs = {
 };
 
 
+export type QueryBlogSlugsArgs = {
+  slug: Array<Maybe<Scalars['String']>>;
+};
+
+
 export type QueryBlogsArgs = {
+  slug?: Maybe<Array<Maybe<Scalars['String']>>>;
   sortBy?: Maybe<BlogSortingInput>;
   filter?: Maybe<BlogFilterInput>;
   before?: Maybe<Scalars['String']>;
@@ -16501,6 +17198,11 @@ export type QueryFilterCheckoutsArgs = {
 };
 
 
+export type QueryFitrofyArgs = {
+  phone: Scalars['String'];
+};
+
+
 export type QueryFreeCheckoutLinesArgs = {
   token?: Maybe<Scalars['String']>;
 };
@@ -16598,6 +17300,19 @@ export type QueryInfluencerArgs = {
 };
 
 
+export type QueryLoyalityArgs = {
+  id?: Maybe<Scalars['ID']>;
+};
+
+
+export type QueryLoyaltiesArgs = {
+  before?: Maybe<Scalars['String']>;
+  after?: Maybe<Scalars['String']>;
+  first?: Maybe<Scalars['Int']>;
+  last?: Maybe<Scalars['Int']>;
+};
+
+
 export type QueryMailTypesArgs = {
   first?: Maybe<Scalars['ID']>;
 };
@@ -16605,6 +17320,16 @@ export type QueryMailTypesArgs = {
 
 export type QueryMeArgs = {
   source?: Maybe<Scalars['String']>;
+  metaFields?: Maybe<Array<Maybe<Scalars['String']>>>;
+};
+
+
+export type QueryMemebershipHistoriesArgs = {
+  filter?: Maybe<MemberShipHistoryFilterInput>;
+  before?: Maybe<Scalars['String']>;
+  after?: Maybe<Scalars['String']>;
+  first?: Maybe<Scalars['Int']>;
+  last?: Maybe<Scalars['Int']>;
 };
 
 
@@ -16683,9 +17408,35 @@ export type QueryOrderArgs = {
 };
 
 
+export type QueryOrderByCheckoutTokenArgs = {
+  source?: Maybe<Scalars['String']>;
+  token: Scalars['UUID'];
+};
+
+
 export type QueryOrderByTokenArgs = {
   source?: Maybe<Scalars['String']>;
   token: Scalars['UUID'];
+};
+
+
+export type QueryOrderEventArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type QueryOrderEventAllArgs = {
+  sortBy?: Maybe<OrderEventHistorySoringInput>;
+  filter?: Maybe<OrderEventHistoryFilterInput>;
+  before?: Maybe<Scalars['String']>;
+  after?: Maybe<Scalars['String']>;
+  first?: Maybe<Scalars['Int']>;
+  last?: Maybe<Scalars['Int']>;
+};
+
+
+export type QueryOrderExtraDataArgs = {
+  orderId: Scalars['ID'];
 };
 
 
@@ -16731,6 +17482,11 @@ export type QueryOrdersV2Args = {
   after?: Maybe<Scalars['String']>;
   first?: Maybe<Scalars['Int']>;
   last?: Maybe<Scalars['Int']>;
+};
+
+
+export type QueryOrdersWithTreeForUserArgs = {
+  userId: Scalars['ID'];
 };
 
 
@@ -16919,6 +17675,12 @@ export type QueryProductReviewsAllArgs = {
 
 export type QueryProductSkusArgs = {
   sku: Array<Maybe<Scalars['String']>>;
+};
+
+
+export type QueryProductSlugArgs = {
+  filter?: Maybe<ProductFilterInput>;
+  slug: Array<Maybe<Scalars['String']>>;
 };
 
 
@@ -17194,6 +17956,12 @@ export type QueryTranslationsArgs = {
 };
 
 
+export type QueryTreeAttributesForOrderArgs = {
+  orderId?: Maybe<Scalars['ID']>;
+  shopifyOrderId?: Maybe<Scalars['String']>;
+};
+
+
 export type QueryTriggerCronsArgs = {
   cronName?: Maybe<Scalars['String']>;
 };
@@ -17207,6 +17975,11 @@ export type QueryUserArgs = {
 export type QueryUserExistsArgs = {
   phone?: Maybe<Scalars['String']>;
   email?: Maybe<Scalars['String']>;
+};
+
+
+export type QueryUserOrdersArgs = {
+  phone?: Maybe<Scalars['String']>;
 };
 
 
@@ -17332,7 +18105,8 @@ export type RazorpayError = {
 export type RazorpayErrorCodeEnum =
   | 'INVALID_AMOUNT'
   | 'INVALID_CURRENCY'
-  | 'INVALID';
+  | 'INVALID'
+  | 'NOT_FOUND';
 
 export type RazorpayOrderType = {
   /** Razorpay Order ID. */
@@ -17381,6 +18155,28 @@ export type ReferAFriend = {
   referHash: Maybe<Scalars['String']>;
   accountErrors: Array<AccountError>;
 };
+
+/** Creates Refer Hash for user. */
+export type ReferalGetHash = {
+  /**
+   * List of errors that occurred executing the mutation.
+   * @deprecated Use typed errors with error codes. This field will be removed after 2020-07-31.
+   */
+  errors: Array<Error>;
+  /** Hash created for the referrer. */
+  referHash: Maybe<Scalars['String']>;
+  accountErrors: Array<AccountError>;
+};
+
+/** An enumeration. */
+export type ReferralRewardType =
+  | 'VOUCHER'
+  | 'POINT';
+
+/** An enumeration. */
+export type ReferredRewardType =
+  | 'VOUCHER'
+  | 'POINT';
 
 /** Refresh JWT token. Mutation tries to take refreshToken from the input.If it fails it will try to take refreshToken from the http-only cookie -refreshToken. csrfToken is required when refreshToken is provided as a cookie. */
 export type RefreshToken = {
@@ -17942,10 +18738,19 @@ export type SectionProductOrder = {
 };
 
 export type SectionProductOrderField =
-  /** Sort products by name. */
   | 'NAME'
-  /** Sort products by section. Note: This option is available only for the `Sections.products` query. */
-  | 'SECTION';
+  | 'SECTION'
+  | 'PRICE'
+  | 'MINIMAL_PRICE'
+  | 'DEFAULT_VARIANT_PRICE'
+  | 'DATE'
+  | 'TYPE'
+  | 'PUBLISHED'
+  | 'PUBLICATION_DATE'
+  | 'COLLECTION'
+  | 'SEARCH_SOLD_SCORE'
+  | 'DISCOUNT'
+  | 'RATING';
 
 /** Remove products from a section. */
 export type SectionRemoveProducts = {
@@ -17976,12 +18781,12 @@ export type SectionSort =
   | 'IS_PUBLISHED';
 
 export type SectionType = Node & ObjectWithMetadataV2 & {
+  /** List of private metadata items.Requires proper staff permissions to access. */
+  privateMetadata: Array<Maybe<MetadataItemV2>>;
   /** List of public metadata items. Can be accessed without permissions. */
   metadata: Array<Maybe<MetadataItemV2>>;
   publicationDate: Maybe<Scalars['Date']>;
   isPublished: Scalars['Boolean'];
-  /** List of private metadata items.Requires proper staff permissions to access. */
-  privateMetadata: Array<Maybe<MetadataItemV2>>;
   /** The ID of the object. */
   id: Scalars['ID'];
   name: Scalars['String'];
@@ -17991,7 +18796,8 @@ export type SectionType = Node & ObjectWithMetadataV2 & {
   /** List of products in this collection. */
   products: Maybe<ProductCountableConnection>;
   collections: CollectionCountableConnection;
-  categories: CategoryCountableConnection;
+  /** Category */
+  categories: Maybe<CategoryCountableConnection>;
   backgroundImage: Maybe<Image>;
   backgroundImageAlt: Scalars['String'];
   updatedAt: Maybe<Scalars['DateTime']>;
@@ -18002,11 +18808,15 @@ export type SectionType = Node & ObjectWithMetadataV2 & {
   level: Scalars['Int'];
   children: SectionTypeCountableConnection;
   images: SectionImageTypeConnection;
+  /** List of selective public metadata items . */
+  customMetaData: Maybe<Array<Maybe<MetadataItem>>>;
 };
 
 
 export type SectionTypeProductsArgs = {
+  filter?: Maybe<ProductFilterInput>;
   sortBy?: Maybe<SectionProductOrder>;
+  metaFields?: Maybe<Array<Maybe<Scalars['String']>>>;
   before?: Maybe<Scalars['String']>;
   after?: Maybe<Scalars['String']>;
   first?: Maybe<Scalars['Int']>;
@@ -18357,10 +19167,10 @@ export type ShipmentItemTypeEdge = {
 };
 
 export type ShipmentType = Node & ObjectWithMetadata & {
-  /** List of public metadata items. Can be accessed without permissions. */
-  metadata: Array<Maybe<MetadataItem>>;
   /** List of private metadata items.Requires proper staff permissions to access. */
   privateMetadata: Array<Maybe<MetadataItem>>;
+  /** List of public metadata items. Can be accessed without permissions. */
+  metadata: Array<Maybe<MetadataItem>>;
   /** The ID of the object. */
   id: Scalars['ID'];
   storeId: Scalars['String'];
@@ -18828,10 +19638,10 @@ export type ShopFetchTaxRates = {
 };
 
 export type ShopMetaType = Node & ObjectWithMetadataV2 & {
-  /** List of public metadata items. Can be accessed without permissions. */
-  metadata: Array<Maybe<MetadataItemV2>>;
   /** List of private metadata items.Requires proper staff permissions to access. */
   privateMetadata: Array<Maybe<MetadataItemV2>>;
+  /** List of public metadata items. Can be accessed without permissions. */
+  metadata: Array<Maybe<MetadataItemV2>>;
   /** The ID of the object. */
   id: Scalars['ID'];
   name: Scalars['String'];
@@ -19147,6 +19957,11 @@ export type StaffUserInput = {
   search?: Maybe<Scalars['String']>;
 };
 
+export type StaffWarehouseInput = {
+  /** warehouse_ids base64 format. */
+  id: Array<Maybe<Scalars['String']>>;
+};
+
 export type StatusType =
   | 'ACTIVE'
   | 'EXPIRED'
@@ -19282,8 +20097,8 @@ export type SubscriptionStatus =
   | 'STATUSTYPES_PAUSED';
 
 export type SubscriptionType = Node & {
-  metadata: Maybe<Scalars['JSONString']>;
   privateMetadata: Maybe<Scalars['JSONString']>;
+  metadata: Maybe<Scalars['JSONString']>;
   /** The ID of the object. */
   id: Scalars['ID'];
   user: Maybe<User>;
@@ -19318,7 +20133,7 @@ export type SurveyAnswerInput = {
   /** SurveyQuestion instance ID. */
   question: Scalars['ID'];
   /** Survey answer of type String, can accept string as well as integers. */
-  answer: Scalars['String'];
+  answer?: Maybe<Scalars['String']>;
 };
 
 export type SurveyAnswerOptionsInput = {
@@ -19328,34 +20143,11 @@ export type SurveyAnswerOptionsInput = {
   answer: Scalars['String'];
 };
 
-export type SurveyAnswerOptionsType = Node & {
-  /** The ID of the object. */
-  id: Scalars['ID'];
-  question: SurveyQuestionOptionsType;
-  answer: Scalars['String'];
-  created: Scalars['DateTime'];
-};
-
-export type SurveyAnswerOptionsTypeConnection = {
-  /** Pagination data for this connection. */
-  pageInfo: PageInfo;
-  /** Contains the nodes in this connection. */
-  edges: Array<Maybe<SurveyAnswerOptionsTypeEdge>>;
-};
-
-/** A Relay edge containing a `SurveyAnswerOptionsType` and its cursor. */
-export type SurveyAnswerOptionsTypeEdge = {
-  /** The item at the end of the edge */
-  node: Maybe<SurveyAnswerOptionsType>;
-  /** A cursor for use in pagination */
-  cursor: Scalars['String'];
-};
-
 export type SurveyAnswerType = Node & {
   /** The ID of the object. */
   id: Scalars['ID'];
   question: SurveyQuestionType;
-  answer: Scalars['String'];
+  answer: Maybe<Scalars['String']>;
   created: Scalars['DateTime'];
 };
 
@@ -19373,6 +20165,12 @@ export type SurveyAnswerTypeEdge = {
   /** A cursor for use in pagination */
   cursor: Scalars['String'];
 };
+
+export type SurveyChannel =
+  | 'FARZICOM_WEB'
+  | 'FARZICOM_APP'
+  | 'SHOPIFY_UAE'
+  | 'SHOPIFY_USA';
 
 /** Create Survey. */
 export type SurveyCreate = {
@@ -19447,6 +20245,10 @@ export type SurveyFillTypeQuestionsArgs = {
 export type SurveyInput = {
   /** Name given by user. */
   name: Scalars['String'];
+  /** Source channel for the survey. */
+  channel?: Maybe<SurveyChannel>;
+  /** Page ID of the survey. */
+  pageId?: Maybe<Scalars['ID']>;
 };
 
 export type SurveyLinkData = {
@@ -19475,41 +20277,6 @@ export type SurveyQuestionInput = {
   order?: Maybe<Scalars['Int']>;
   /** Whether this question is required or not */
   required?: Maybe<Scalars['Boolean']>;
-};
-
-export type SurveyQuestionOptionsType = Node & {
-  /** The ID of the object. */
-  id: Scalars['ID'];
-  text: Scalars['String'];
-  type: SurveyQuestionsWithOptionsType;
-  answer: Scalars['String'];
-  order: Scalars['Int'];
-  required: Scalars['Boolean'];
-  survey: SurveyType;
-  answersFromOptions: SurveyAnswerOptionsTypeConnection;
-};
-
-
-export type SurveyQuestionOptionsTypeAnswersFromOptionsArgs = {
-  before?: Maybe<Scalars['String']>;
-  after?: Maybe<Scalars['String']>;
-  first?: Maybe<Scalars['Int']>;
-  last?: Maybe<Scalars['Int']>;
-};
-
-export type SurveyQuestionOptionsTypeConnection = {
-  /** Pagination data for this connection. */
-  pageInfo: PageInfo;
-  /** Contains the nodes in this connection. */
-  edges: Array<Maybe<SurveyQuestionOptionsTypeEdge>>;
-};
-
-/** A Relay edge containing a `SurveyQuestionOptionsType` and its cursor. */
-export type SurveyQuestionOptionsTypeEdge = {
-  /** The item at the end of the edge */
-  node: Maybe<SurveyQuestionOptionsType>;
-  /** A cursor for use in pagination */
-  cursor: Scalars['String'];
 };
 
 export type SurveyQuestionType = Node & {
@@ -19545,45 +20312,35 @@ export type SurveyQuestionTypeEdge = {
   cursor: Scalars['String'];
 };
 
-/** An enumeration. */
-export type SurveyQuestionsWithOptionsType =
-  /** Text */
-  | 'TEXT'
-  /** Options */
-  | 'OPTIONS'
-  /** Checkbox */
-  | 'CHECKBOX'
-  /** Rating */
-  | 'RATING'
-  /** Date */
-  | 'DATE';
+/** Delete Survey Questions with Answers. */
+export type SurveyQuestionsDelete = {
+  /**
+   * List of errors that occurred executing the mutation.
+   * @deprecated Use typed errors with error codes. This field will be removed after 2020-07-31.
+   */
+  errors: Array<Error>;
+  /** A Survey instance. */
+  survey: Maybe<SurveyType>;
+  updateErrors: Array<SurveyError>;
+};
 
 export type SurveyType = Node & {
   name: Scalars['String'];
   shown: Scalars['Boolean'];
   attempted: Scalars['Boolean'];
-  questions: SurveyQuestionTypeConnection;
-  /** The ID of the object. */
-  id: Scalars['ID'];
   user: Maybe<User>;
   userEmail: Scalars['String'];
   order: Maybe<Order>;
   surveyHash: Maybe<Scalars['String']>;
   created: Scalars['DateTime'];
-  questionsOptions: SurveyQuestionOptionsTypeConnection;
+  /** The ID of the object. */
+  id: Scalars['ID'];
   linkData: Maybe<SurveyLinkData>;
+  questions: Maybe<SurveyQuestionTypeConnection>;
 };
 
 
 export type SurveyTypeQuestionsArgs = {
-  before?: Maybe<Scalars['String']>;
-  after?: Maybe<Scalars['String']>;
-  first?: Maybe<Scalars['Int']>;
-  last?: Maybe<Scalars['Int']>;
-};
-
-
-export type SurveyTypeQuestionsOptionsArgs = {
   before?: Maybe<Scalars['String']>;
   after?: Maybe<Scalars['String']>;
   first?: Maybe<Scalars['Int']>;
@@ -19603,6 +20360,33 @@ export type SurveyTypeEdge = {
   node: Maybe<SurveyType>;
   /** A cursor for use in pagination */
   cursor: Scalars['String'];
+};
+
+/** Update Survey. */
+export type SurveyUpdate = {
+  /**
+   * List of errors that occurred executing the mutation.
+   * @deprecated Use typed errors with error codes. This field will be removed after 2020-07-31.
+   */
+  errors: Array<Error>;
+  /** A Survey instance. */
+  survey: Maybe<SurveyType>;
+  updateErrors: Array<SurveyError>;
+};
+
+export type SurveyUpdateInput = {
+  /** Name given by user */
+  name?: Maybe<Scalars['String']>;
+  /** email of user */
+  email?: Maybe<Scalars['String']>;
+  /** Shown status */
+  shown?: Maybe<Scalars['Boolean']>;
+  /** Attempted status  */
+  attempted?: Maybe<Scalars['Boolean']>;
+  /** Order Id */
+  order?: Maybe<Scalars['ID']>;
+  /** Order Id */
+  customer?: Maybe<Scalars['ID']>;
 };
 
 /** Sync Inventory with WareIq. */
@@ -19716,8 +20500,16 @@ export type TemplateMailType =
   | 'INVOICE'
   | 'CONTACT_US'
   | 'MEMBERSHIP_ACTIVATE'
+  | 'MEMBERSHIP_ACTIVATE_CLASSIC'
+  | 'MEMBERSHIP_ACTIVATE_FIRST_ORDER'
+  | 'MEMBERSHIP_ACTIVATE_ELITE'
+  | 'MEMBERSHIP_ACTIVATE_ULTIMATE'
   | 'REVIEW_MAIL'
-  | 'ORDER_EDITED';
+  | 'REVIEW_ADMIN_REPLY'
+  | 'ORDER_REFUNDED'
+  | 'ORDER_EDITED'
+  | 'TREE_PLANTED'
+  | 'REFER_A_FRIEND';
 
 export type TemplateMailTypeFilter =
   | 'ORDER_CONFIRM'
@@ -19733,7 +20525,13 @@ export type TemplateMailTypeFilter =
   | 'INVOICE'
   | 'CONTACT_US'
   | 'MEMBERSHIP_ACTIVATE'
-  | 'ORDER_EDITED';
+  | 'MEMBERSHIP_ACTIVATE_CLASSIC'
+  | 'MEMBERSHIP_ACTIVATE_FIRST_ORDER'
+  | 'MEMBERSHIP_ACTIVATE_ELITE'
+  | 'MEMBERSHIP_ACTIVATE_ULTIMATE'
+  | 'ORDER_EDITED'
+  | 'TREE_PLANTED'
+  | 'REFER_A_FRIEND';
 
 /** Requests for Token for registered user. */
 export type TokenCreateWithAdmin = {
@@ -19860,6 +20658,18 @@ export type TranslationInput = {
   name?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
   descriptionJson?: Maybe<Scalars['JSONString']>;
+};
+
+export type TreeAttributesType = {
+  id: Maybe<Scalars['ID']>;
+  latitude: Maybe<Scalars['Float']>;
+  longitude: Maybe<Scalars['Float']>;
+  species: Maybe<Scalars['String']>;
+  plantedDate: Maybe<Scalars['String']>;
+  plantedBy: Maybe<Scalars['String']>;
+  plantedLocation: Maybe<Scalars['String']>;
+  farmerBeneficiaryName: Maybe<Scalars['String']>;
+  treeImage: Maybe<Scalars['String']>;
 };
 
 /** Trigger a cron as specified in input. */
@@ -20024,6 +20834,18 @@ export type UpdateInvoiceInput = {
   url?: Maybe<Scalars['String']>;
 };
 
+/** Update Loyality data. */
+export type UpdateLoyality = {
+  /**
+   * List of errors that occurred executing the mutation.
+   * @deprecated Use typed errors with error codes. This field will be removed after 2020-07-31.
+   */
+  errors: Array<Error>;
+  /** A Loyality instance. */
+  loyality: Maybe<LoyalityType>;
+  loyalityErrors: Array<LoyalityError>;
+};
+
 /** Update Manufacturing Details of a product. */
 export type UpdateManufacturingDetailsCsv = {
   /**
@@ -20067,6 +20889,20 @@ export type UpdatePaymentMethod = {
   /** A checkout instance. */
   checkout: Maybe<Checkout>;
   checkoutErrors: Array<CheckoutError>;
+};
+
+/** Update Predefined Survey (can be used for adding sub-survey/sub-quiz data). */
+export type UpdatePredefinedSurvey = {
+  /**
+   * List of errors that occurred executing the mutation.
+   * @deprecated Use typed errors with error codes. This field will be removed after 2020-07-31.
+   */
+  errors: Array<Error>;
+  /** A Survey instance. */
+  survey: Maybe<SurveyType>;
+  /** Page data */
+  page: Maybe<Array<Maybe<Page>>>;
+  updateErrors: Array<SurveyError>;
 };
 
 /** Updates private metadata of an object. */
@@ -20122,7 +20958,23 @@ export type UpdateProductvariantMetadata = {
   errors: Array<Error>;
   /** Success message */
   message: Maybe<Scalars['String']>;
+  productVariantMetadataUpdateErrors: Array<UpdateProductvariantMetadataError>;
 };
+
+export type UpdateProductvariantMetadataError = {
+  /** Name of a field that caused the error. A value of `null` indicates that the error isn't associated with a particular field. */
+  field: Maybe<Scalars['String']>;
+  /** The error message. */
+  message: Maybe<Scalars['String']>;
+  /** The error code. */
+  code: UpdateProductvariantMetadataErrorCode;
+};
+
+/** An enumeration. */
+export type UpdateProductvariantMetadataErrorCode =
+  | 'INVALID_FILE_FORMAT'
+  | 'NOT_FOUND'
+  | 'INVALID';
 
 /** Create or update reply on Product Review */
 export type UpdateReplyOnProductReview = {
@@ -20169,6 +21021,20 @@ export type UpdateShopifyUser = {
   errors: Array<Error>;
   /** An ShopifyUser instance. */
   shopifyUser: Maybe<ShopifyUserType>;
+};
+
+/** Update Staff Warehouse. */
+export type UpdateStaffWarehouse = {
+  /**
+   * List of errors that occurred executing the mutation.
+   * @deprecated Use typed errors with error codes. This field will be removed after 2020-07-31.
+   */
+  errors: Array<Error>;
+  /** An updated staff user warehouse data. */
+  message: Maybe<Scalars['String']>;
+  /** An updated user instance. */
+  user: Maybe<User>;
+  accountErrors: Array<AccountError>;
 };
 
 /** Update a subscription. */
@@ -20316,6 +21182,26 @@ export type User = Node & ObjectWithMetadata & {
   tags: Array<Maybe<TagType>>;
   /** give average value of orders done by User */
   averageOrderValueByUser: Maybe<Scalars['String']>;
+  /** List of order extra data's. */
+  extraData: Maybe<Array<Maybe<UserExtraData>>>;
+  /** List of members */
+  membershipHistory: Maybe<Array<Maybe<MemberShipHistoryType>>>;
+  /** JWT token, required to authenticate. */
+  token: Maybe<Scalars['String']>;
+  /** JWT refresh token, required to re-generate access token. */
+  refreshToken: Maybe<Scalars['String']>;
+  /** CSRF token required to re-generate access token. */
+  csrfToken: Maybe<Scalars['String']>;
+  /** wallet of the user. */
+  wallet: Maybe<WalletType>;
+  /** List of selective public metadata items . */
+  customMetaData: Maybe<Array<Maybe<MetadataItem>>>;
+};
+
+
+/** Represents user data. */
+export type UserCheckoutArgs = {
+  checkoutTag?: Maybe<Scalars['String']>;
 };
 
 
@@ -20330,6 +21216,8 @@ export type UserGiftCardsArgs = {
 
 /** Represents user data. */
 export type UserOrdersArgs = {
+  productTag?: Maybe<Scalars['String']>;
+  excludedTags?: Maybe<Array<Maybe<Scalars['String']>>>;
   before?: Maybe<Scalars['String']>;
   after?: Maybe<Scalars['String']>;
   first?: Maybe<Scalars['Int']>;
@@ -20467,6 +21355,21 @@ export type UserExistsType = {
   emailExist: Maybe<Scalars['Boolean']>;
   /** either phone or email is active */
   isActive: Maybe<Scalars['Boolean']>;
+  /** message */
+  message: Maybe<Scalars['String']>;
+};
+
+/** Represents extra Data of an user in the shop. */
+export type UserExtraData = {
+  id: Scalars['ID'];
+  user: User;
+  key: Scalars['String'];
+  value: Scalars['String'];
+};
+
+export type UserOrders = {
+  /** total order count of the user  */
+  totalCount: Maybe<Scalars['Int']>;
 };
 
 export type UserPermission = {
@@ -20907,8 +21810,8 @@ export type VoucherRuleOrderField =
   | 'CODE';
 
 export type VoucherRuleType = Node & {
-  metadata: Maybe<Scalars['JSONString']>;
   privateMetadata: Maybe<Scalars['JSONString']>;
+  metadata: Maybe<Scalars['JSONString']>;
   /** The ID of the object. */
   id: Scalars['ID'];
   name: Scalars['String'];
@@ -21038,6 +21941,18 @@ export type VoucherUpdate = {
   voucher: Maybe<Voucher>;
 };
 
+/** Add Wallet Balance of a user for some particular reasons. */
+export type WalletBalanceAdd = {
+  /**
+   * List of errors that occurred executing the mutation.
+   * @deprecated Use typed errors with error codes. This field will be removed after 2020-07-31.
+   */
+  errors: Array<Error>;
+  /** Wallet Amount Credited. */
+  walletAmount: Maybe<Scalars['String']>;
+  WalletErrors: Array<WalletError>;
+};
+
 /** Add Wallet Balance of a user from a csv file */
 export type WalletBalanceAddCsv = {
   /**
@@ -21118,6 +22033,8 @@ export type WalletInput = {
   type: Scalars['String'];
   /** Secret for updation */
   secret: Scalars['String'];
+  /** Number of days until the cashback expires. If not provided, defaults will be applied. */
+  expireInDays?: Maybe<Scalars['String']>;
 };
 
 export type WalletInputPhone = {
@@ -21430,6 +22347,7 @@ export type WebhookEvent = {
 export type WebhookEventTypeEnum =
   | 'ANY_EVENTS'
   | 'ORDER_CREATED'
+  | 'ORDER_CREATED_V2'
   | 'ORDER_FULLY_PAID'
   | 'ORDER_UPDATED'
   | 'ORDER_CANCELLED'
@@ -21447,7 +22365,10 @@ export type WebhookEventTypeEnum =
   | 'CHECKOUT_SHIPPING_ADDRESS_UPDATED'
   | 'CHECKOUT_VOUCHER_UPDATED'
   | 'FULFILLMENT_CREATED'
-  | 'ORDER_EDITED';
+  | 'ORDER_EDITED'
+  | 'ORDER_CLONE'
+  | 'ORDER_DRAFT'
+  | 'USER_CHECKOUT_FETCH';
 
 export type WebhookFilterInput = {
   search?: Maybe<Scalars['String']>;
@@ -21457,6 +22378,7 @@ export type WebhookFilterInput = {
 /** An enumeration. */
 export type WebhookSampleEventTypeEnum =
   | 'ORDER_CREATED'
+  | 'ORDER_CREATED_V2'
   | 'ORDER_FULLY_PAID'
   | 'ORDER_UPDATED'
   | 'ORDER_CANCELLED'
@@ -21474,7 +22396,10 @@ export type WebhookSampleEventTypeEnum =
   | 'CHECKOUT_SHIPPING_ADDRESS_UPDATED'
   | 'CHECKOUT_VOUCHER_UPDATED'
   | 'FULFILLMENT_CREATED'
-  | 'ORDER_EDITED';
+  | 'ORDER_EDITED'
+  | 'ORDER_CLONE'
+  | 'ORDER_DRAFT'
+  | 'USER_CHECKOUT_FETCH';
 
 export type WebhookSortField =
   /** Sort webhooks by name. */
@@ -21704,10 +22629,7 @@ export type GlobalSearchType = {
   blogs: Maybe<Array<Maybe<BlogType>>>;
 };
 
-export type membershipHistory = Pick<MembershipEdge, 'id' | 'isActive' | 'membershipDiscount' | 'membershipExpiry' | 'membershipPurchase' | 'membershipCashbackAmount' | 'membershipAmount' | 'usedVouchers'>
-
 export type AccountErrorFragment = Pick<AccountError, 'code' | 'field' | 'message'>;
-
 
 export type AddressFragment = (
   Pick<Address, 'id' | 'firstName' | 'lastName' | 'companyName' | 'streetAddress1' | 'streetAddress2' | 'city' | 'cityArea' | 'postalCode' | 'countryArea' | 'phone' | 'isDefaultBillingAddress' | 'isDefaultShippingAddress'>
@@ -21716,10 +22638,15 @@ export type AddressFragment = (
 
 export type UserFragment = (
   Pick<User, 'id' | 'email' | 'firstName' | 'lastName' | 'phone' | 'isStaff'>
-  & { tags: Array<Maybe<Pick<TagType, 'name'>>>, metadata: Array<Maybe<Pick<MetadataItem, 'key' | 'value'>>>, defaultShippingAddress: Maybe<AddressFragment>, defaultBillingAddress: Maybe<AddressFragment>, membershipHistory: Array<Maybe<membershipHistory>>, addresses: Maybe<Array<Maybe<AddressFragment>>> }
+  & { tags: Array<Maybe<Pick<TagType, 'name'>>>, metadata: Array<Maybe<Pick<MetadataItem, 'key' | 'value'>>>, defaultShippingAddress: Maybe<AddressFragment>, defaultBillingAddress: Maybe<AddressFragment>, addresses: Maybe<Array<Maybe<AddressFragment>>>, membershipHistory: Maybe<Array<Maybe<Pick<MemberShipHistoryType, 'id' | 'isActive' | 'membershipDiscount' | 'membershipExpiry' | 'membershipPurchase' | 'membershipCashbackAmount' | 'membershipAmount' | 'usedVouchers'>>>> }
 );
 
 export type PriceFragment = { gross: Pick<Money, 'amount' | 'currency'>, net: Pick<Money, 'amount' | 'currency'> };
+
+export type AddressFragment = (
+  Pick<Address, 'id' | 'firstName' | 'lastName' | 'companyName' | 'streetAddress1' | 'streetAddress2' | 'city' | 'postalCode' | 'countryArea' | 'phone' | 'isDefaultBillingAddress' | 'isDefaultShippingAddress'>
+  & { country: Pick<CountryDisplay, 'code' | 'country'> }
+);
 
 export type ProductVariantFragment = (
   Pick<ProductVariant, 'id' | 'name' | 'sku' | 'quantityAvailable'>
@@ -22124,7 +23051,7 @@ export type RemoveCheckoutLineMutationVariables = Exact<{
 
 
 export type RemoveCheckoutLineMutation = { checkoutLineDelete: Maybe<{ checkout: Maybe<(
-      { paymentMethod: Maybe<Pick<PaymentMethodType, 'cashbackDiscountAmount' | 'couponDiscount' | 'prepaidDiscountAmount'|'platformChargeAmount'>>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>> }
+      { paymentMethod: Maybe<Pick<PaymentMethodType, 'cashbackDiscountAmount' | 'couponDiscount' | 'prepaidDiscountAmount' | 'platformChargeAmount'>>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>> }
       & CheckoutFragment
     )>, errors: Array<CheckoutErrorFragment> }> };
 
@@ -22137,7 +23064,7 @@ export type UpdateCheckoutShippingAddressMutationVariables = Exact<{
 
 
 export type UpdateCheckoutShippingAddressMutation = { checkoutShippingAddressUpdate: Maybe<{ errors: Array<CheckoutErrorFragment>, checkout: Maybe<(
-      { paymentMethod: Maybe<Pick<PaymentMethodType, 'cashbackDiscountAmount' | 'couponDiscount' | 'prepaidDiscountAmount'|'platformChargeAmount'>>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>> }
+      { paymentMethod: Maybe<Pick<PaymentMethodType, 'cashbackDiscountAmount' | 'couponDiscount' | 'prepaidDiscountAmount' | 'platformChargeAmount'>>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>> }
       & CheckoutFragment
     )> }>, checkoutEmailUpdate: Maybe<{ checkout: Maybe<CheckoutFragment>, errors: Array<CheckoutErrorFragment> }> };
 
@@ -22150,7 +23077,7 @@ export type UpdateCheckoutShippingAddressNewMutationVariables = Exact<{
 
 
 export type UpdateCheckoutShippingAddressNewMutation = { checkoutShippingAddressUpdate: Maybe<{ errors: Array<CheckoutErrorFragment>, checkout: Maybe<(
-      { paymentMethod: Maybe<Pick<PaymentMethodType, 'cashbackDiscountAmount' | 'couponDiscount' | 'prepaidDiscountAmount'|'platformChargeAmount'>>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>> }
+      { paymentMethod: Maybe<Pick<PaymentMethodType, 'cashbackDiscountAmount' | 'couponDiscount' | 'prepaidDiscountAmount' | 'platformChargeAmount'>>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>> }
       & CheckoutFragment
     )> }> };
 
@@ -22189,7 +23116,7 @@ export type AddCheckoutPromoCodeMutationVariables = Exact<{
 
 
 export type AddCheckoutPromoCodeMutation = { checkoutAddPromoCode: Maybe<{ checkout: Maybe<(
-      { paymentMethod: Maybe<Pick<PaymentMethodType, 'cashbackDiscountAmount' | 'couponDiscount' | 'prepaidDiscountAmount'|'platformChargeAmount'>>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>> }
+      { paymentMethod: Maybe<Pick<PaymentMethodType, 'cashbackDiscountAmount' | 'couponDiscount' | 'prepaidDiscountAmount' | 'platformChargeAmount'>>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>> }
       & CheckoutFragment
     )>, errors: Array<CheckoutErrorFragment> }> };
 
@@ -22201,7 +23128,7 @@ export type RemoveCheckoutPromoCodeMutationVariables = Exact<{
 
 
 export type RemoveCheckoutPromoCodeMutation = { checkoutRemovePromoCode: Maybe<{ checkout: Maybe<(
-      { paymentMethod: Maybe<Pick<PaymentMethodType, 'cashbackDiscountAmount' | 'couponDiscount' | 'prepaidDiscountAmount'|'platformChargeAmount'>>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>> }
+      { paymentMethod: Maybe<Pick<PaymentMethodType, 'cashbackDiscountAmount' | 'couponDiscount' | 'prepaidDiscountAmount' | 'platformChargeAmount'>>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>> }
       & CheckoutFragment
     )>, errors: Array<CheckoutErrorFragment> }> };
 
@@ -22235,7 +23162,7 @@ export type CheckoutPaymentMethodUpdateMutationVariables = Exact<{
 
 
 export type CheckoutPaymentMethodUpdateMutation = { checkoutPaymentMethodUpdate: Maybe<{ checkout: Maybe<(
-      { paymentMethod: Maybe<Pick<PaymentMethodType, 'cashbackDiscountAmount' | 'couponDiscount' | 'prepaidDiscountAmount'|'platformChargeAmount'>>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>> }
+      { paymentMethod: Maybe<Pick<PaymentMethodType, 'cashbackDiscountAmount' | 'couponDiscount' | 'prepaidDiscountAmount' | 'platformChargeAmount'>>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>> }
       & CheckoutFragment
     )>, checkoutErrors: Array<Pick<CheckoutError, 'field' | 'message' | 'code'>> }> };
 
@@ -22324,7 +23251,7 @@ export type CheckoutCustomerAttachNewMutationVariables = Exact<{
 
 
 export type CheckoutCustomerAttachNewMutation = { checkoutCustomerAttach: Maybe<{ checkout: Maybe<(
-      { paymentMethod: Maybe<Pick<PaymentMethodType, 'cashbackDiscountAmount' | 'couponDiscount' | 'prepaidDiscountAmount'|'platformChargeAmount'>>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>> }
+      { paymentMethod: Maybe<Pick<PaymentMethodType, 'cashbackDiscountAmount' | 'couponDiscount' | 'prepaidDiscountAmount' | 'platformChargeAmount'>>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>> }
       & CheckoutFragment
     )> }> };
 
@@ -22337,7 +23264,7 @@ export type AddCheckoutLineNextMutationVariables = Exact<{
 
 
 export type AddCheckoutLineNextMutation = { checkoutLinesAdd: Maybe<{ checkout: Maybe<(
-      { paymentMethod: Maybe<Pick<PaymentMethodType, 'cashbackDiscountAmount' | 'couponDiscount' | 'prepaidDiscountAmount'|'platformChargeAmount'>>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>> }
+      { paymentMethod: Maybe<Pick<PaymentMethodType, 'cashbackDiscountAmount' | 'couponDiscount' | 'prepaidDiscountAmount' | 'platformChargeAmount'>>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>> }
       & CheckoutFragment
     )>, errors: Array<CheckoutErrorFragment> }> };
 
@@ -22347,7 +23274,7 @@ export type CreateCheckoutNextMutationVariables = Exact<{
 
 
 export type CreateCheckoutNextMutation = { checkoutCreate: Maybe<{ errors: Array<CheckoutErrorFragment>, checkout: Maybe<(
-      { paymentMethod: Maybe<Pick<PaymentMethodType, 'cashbackDiscountAmount' | 'couponDiscount' | 'prepaidDiscountAmount'|"platformChargeAmount">>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>> }
+      { paymentMethod: Maybe<Pick<PaymentMethodType, 'cashbackDiscountAmount' | 'couponDiscount' | 'prepaidDiscountAmount' | 'platformChargeAmount'>>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>> }
       & CheckoutFragment
     )> }> };
 
@@ -22359,7 +23286,7 @@ export type UpdateCheckoutShippingMethodNextMutationVariables = Exact<{
 
 
 export type UpdateCheckoutShippingMethodNextMutation = { checkoutShippingMethodUpdate: Maybe<{ checkout: Maybe<(
-      { paymentMethod: Maybe<Pick<PaymentMethodType, 'cashbackDiscountAmount' | 'couponDiscount' | 'prepaidDiscountAmount'|'platformChargeAmount'>>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>> }
+      { paymentMethod: Maybe<Pick<PaymentMethodType, 'cashbackDiscountAmount' | 'couponDiscount' | 'prepaidDiscountAmount' | 'platformChargeAmount'>>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>> }
       & CheckoutFragment
     )>, errors: Array<CheckoutErrorFragment> }> };
 
@@ -22371,7 +23298,7 @@ export type UpdateCheckoutLineNextMutationVariables = Exact<{
 
 
 export type UpdateCheckoutLineNextMutation = { checkoutLinesUpdate: Maybe<{ checkout: Maybe<(
-      { paymentMethod: Maybe<Pick<PaymentMethodType, 'cashbackDiscountAmount' | 'couponDiscount' | 'prepaidDiscountAmount'|'platformChargeAmount'>>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>> }
+      { paymentMethod: Maybe<Pick<PaymentMethodType, 'cashbackDiscountAmount' | 'couponDiscount' | 'prepaidDiscountAmount' | 'platformChargeAmount'>>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>> }
       & CheckoutFragment
     )>, errors: Array<CheckoutErrorFragment> }> };
 
@@ -22409,7 +23336,7 @@ export type CheckoutDetailsNextQueryVariables = Exact<{
 export type CheckoutDetailsNextQuery = (
   Pick<Query, 'checkoutUpdated'>
   & { checkout: Maybe<(
-    { paymentMethod: Maybe<Pick<PaymentMethodType, 'cashbackDiscountAmount' | 'couponDiscount' | 'prepaidDiscountAmount'|'platformChargeAmount'>>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>> }
+    { paymentMethod: Maybe<Pick<PaymentMethodType, 'cashbackDiscountAmount' | 'couponDiscount' | 'prepaidDiscountAmount' | 'platformChargeAmount'>>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>> }
     & CheckoutFragment
   )> }
 );
@@ -22421,7 +23348,7 @@ export type CheckoutPaymentsNextQueryVariables = Exact<{
 
 export type CheckoutPaymentsNextQuery = { checkout: Maybe<(
     Pick<Checkout, 'id' | 'token' | 'voucherCode'>
-    & { totalPrice: Maybe<PriceFragment>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>>, discount: Maybe<Pick<Money, 'amount' | 'currency'>>, paymentMethod: Maybe<Pick<PaymentMethodType, 'cashbackDiscountAmount' | 'couponDiscount' | 'prepaidDiscountAmount'|'platformChargeAmount'>>, subtotalPrice: Maybe<PriceFragment> }
+    & { totalPrice: Maybe<PriceFragment>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>>, discount: Maybe<Pick<Money, 'amount' | 'currency'>>, paymentMethod: Maybe<Pick<PaymentMethodType, 'cashbackDiscountAmount' | 'couponDiscount' | 'prepaidDiscountAmount' | 'platformChargeAmount'>>, shippingMethod: Maybe<ShippingMethodFragment>, shippingPrice: Maybe<PriceFragment>, subtotalPrice: Maybe<PriceFragment> }
   )> };
 
 export type GetCartItemsQueryVariables = Exact<{ [key: string]: never; }>;
@@ -22434,7 +23361,7 @@ export type GetLocalCheckoutQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetLocalCheckoutQuery = (
   Pick<Query, 'useCashback' | 'checkoutLoading' | 'userWalletBalance'>
-  & { localCheckout: Maybe<CheckoutFragment>, localCheckoutDiscounts: Maybe<Pick<DiscountsType, 'prepaidDiscount' | 'couponDiscount' | 'cashbackDiscount'|'platformCharge'>>, localCashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>>, recentOrder: Maybe<OrderDetailFragment> }
+  & { localCheckout: Maybe<CheckoutFragment>, localCheckoutDiscounts: Maybe<Pick<DiscountsType, 'prepaidDiscount' | 'couponDiscount' | 'cashbackDiscount' | 'platformCharge'>>, localCashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>>, recentOrder: Maybe<OrderDetailFragment> }
 );
 
 export type DiscountsAndCashbackQueryVariables = Exact<{
@@ -22442,15 +23369,17 @@ export type DiscountsAndCashbackQueryVariables = Exact<{
 }>;
 
 
-export type DiscountsAndCashbackQuery = { checkoutDiscounts: Maybe<Pick<DiscountsType, 'prepaidDiscount' | 'couponDiscount' | 'cashbackDiscount'|'platformCharge'>>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>> };
+export type DiscountsAndCashbackQuery = { checkoutDiscounts: Maybe<Pick<DiscountsType, 'prepaidDiscount' | 'couponDiscount' | 'cashbackDiscount' | 'platformCharge'>>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>> };
 
-export type UserCheckoutDetailsQueryVariables = Exact<{checkoutTag?: string | null;}>;
+export type UserCheckoutDetailsQueryVariables = Exact<{
+  checkoutTag?: Maybe<Scalars['String']>;
+}>;
 
 
 export type UserCheckoutDetailsQuery = { me: Maybe<(
     Pick<User, 'id'>
     & { checkout: Maybe<(
-      { paymentMethod: Maybe<Pick<PaymentMethodType, 'cashbackDiscountAmount' | 'couponDiscount' | 'prepaidDiscountAmount'|'platformChargeAmount'>>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>> }
+      { paymentMethod: Maybe<Pick<PaymentMethodType, 'cashbackDiscountAmount' | 'couponDiscount' | 'prepaidDiscountAmount' | 'platformChargeAmount'>>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>> }
       & CheckoutFragment
     )> }
   )> };
@@ -22511,7 +23440,7 @@ export type CheckoutRecalculationQueryVariables = Exact<{
 
 
 export type CheckoutRecalculationQuery = { checkoutRecalculation: Maybe<(
-    { paymentMethod: Maybe<Pick<PaymentMethodType, 'cashbackDiscountAmount' | 'couponDiscount' | 'prepaidDiscountAmount'|'platformChargeAmount'>>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>> }
+    { paymentMethod: Maybe<Pick<PaymentMethodType, 'cashbackDiscountAmount' | 'couponDiscount' | 'prepaidDiscountAmount' | 'platformChargeAmount'>>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>> }
     & CheckoutFragment
   )> };
 
@@ -22567,6 +23496,16 @@ export const UserFragmentDoc = gql`
   addresses {
     ...AddressFragment
   }
+  membershipHistory {
+    id
+    isActive
+    membershipDiscount
+    membershipExpiry
+    membershipPurchase
+    membershipCashbackAmount
+    membershipAmount
+    usedVouchers
+  }
 }
     ${AddressFragmentDoc}`;
 export const PriceFragmentDoc = gql`
@@ -22579,6 +23518,26 @@ export const PriceFragmentDoc = gql`
     amount
     currency
   }
+}
+    `;
+export const AddressFragmentDoc = gql`
+    fragment Address on Address {
+  id
+  firstName
+  lastName
+  companyName
+  streetAddress1
+  streetAddress2
+  city
+  postalCode
+  country {
+    code
+    country
+  }
+  countryArea
+  phone
+  isDefaultBillingAddress
+  isDefaultShippingAddress
 }
     `;
 export const ShippingMethodFragmentDoc = gql`
@@ -25126,12 +26085,19 @@ export const CheckoutPaymentsNextDocument = gql`
       prepaidDiscountAmount
       platformChargeAmount
     }
+    shippingMethod {
+      ...ShippingMethod
+    }
+    shippingPrice {
+      ...Price
+    }
     subtotalPrice {
       ...Price
     }
   }
 }
-    ${PriceFragmentDoc}`;
+    ${PriceFragmentDoc}
+${ShippingMethodFragmentDoc}`;
 
 /**
  * __useCheckoutPaymentsNextQuery__
@@ -25251,6 +26217,7 @@ export const DiscountsAndCashbackQueryDocument = gql`
     prepaidDiscount
     couponDiscount
     cashbackDiscount
+    platformCharge
   }
   cashback(checkoutToken: $token) {
     amount
@@ -25287,10 +26254,10 @@ export type DiscountsAndCashbackQueryHookResult = ReturnType<typeof useDiscounts
 export type DiscountsAndCashbackQueryLazyQueryHookResult = ReturnType<typeof useDiscountsAndCashbackQueryLazyQuery>;
 export type DiscountsAndCashbackQueryQueryResult = Apollo.QueryResult<DiscountsAndCashbackQuery, DiscountsAndCashbackQueryVariables>;
 export const UserCheckoutDetailsDocument = gql`
-    query UserCheckoutDetails {
+    query UserCheckoutDetails($checkoutTag: String) {
   me(source: "user_details") {
     id
-    checkout {
+    checkout(checkoutTag: $checkoutTag) {
       ...Checkout
       paymentMethod {
         cashbackDiscountAmount
@@ -25319,6 +26286,7 @@ export const UserCheckoutDetailsDocument = gql`
  * @example
  * const { data, loading, error } = useUserCheckoutDetailsQuery({
  *   variables: {
+ *      checkoutTag: // value for 'checkoutTag'
  *   },
  * });
  */
