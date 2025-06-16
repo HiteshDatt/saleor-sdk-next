@@ -170,6 +170,14 @@ export const checkoutProductVariantFragment = gql`
       tags {
         name
       }
+      collections {
+        id
+        name
+        metadata {
+          key
+          value
+        }
+      }
     }
   }
 `;
