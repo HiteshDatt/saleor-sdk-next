@@ -23,6 +23,7 @@ export const useAuthState = (): UserDetailsQuery => {
     USER
   );
   const { data } = res;
+    console.log("user res", data);
 
   if (!data) {
     // throw new Error(
