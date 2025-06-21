@@ -46,6 +46,7 @@ export const userFragment = gql`
       key
       value
     }
+    dateJoined
     defaultShippingAddress {
       ...AddressFragment
     }

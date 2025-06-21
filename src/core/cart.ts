@@ -1156,12 +1156,15 @@ export const cart = ({
       },
     });
     const checkoutString = storage.getCheckout();
+    console.log("checkoutString1", checkoutString);
     const checkout: Checkout | null | undefined =
       checkoutString && typeof checkoutString === "string"
         ? JSON.parse(checkoutString)
         : checkoutString;
+    console.log("checkout1", checkout);
 
     try {
+      console.log("inside the try block");
       if (checkout && checkout?.token) {
         const dbVariantId = getDBIdFromGraphqlId(variantId, "ProductVariant");
         const lines = [
@@ -1185,6 +1188,7 @@ export const cart = ({
             REST_API_METHODS_TYPES.POST,
             input
           );
+          console.log("response of rest api", res);
 
           if (res?.data?.token) {
             const updatedLines = res?.data?.lines.map((line: any) => {
@@ -1228,6 +1232,7 @@ export const cart = ({
               ...res.data,
               lines: updatedLines,
             };
+            console.log("updatedCheckout", updatedCheckout);
             storage.setCheckout(updatedCheckout);
             const result = {
               data: {
@@ -1256,6 +1261,7 @@ export const cart = ({
               },
             });
 
+            console.log("before getCheckoutPayments", client, updatedCheckout);
             getCheckoutPayments(client, updatedCheckout);
 
             return {
@@ -1411,7 +1417,8 @@ export const cart = ({
           //   },
           // });
           return returnObject;
-        } catch {
+        } catch(error) {
+          console.log("get latest checkout error", error);
           await getLatestCheckout(client, checkout);
           client.writeQuery({
             query: GET_LOCAL_CHECKOUT,
