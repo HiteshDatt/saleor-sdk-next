@@ -21713,7 +21713,7 @@ export type AddressFragment = (
 );
 
 export type UserFragment = (
-  Pick<User, 'id' | 'email' | 'firstName' | 'lastName' | 'phone' | 'isStaff'>
+  Pick<User, 'id' | 'email' | 'firstName' | 'lastName' | 'phone' | 'isStaff' | 'dateJoined'>
   & { tags: Array<Maybe<Pick<TagType, 'name'>>>, metadata: Array<Maybe<Pick<MetadataItem, 'key' | 'value'>>>, defaultShippingAddress: Maybe<AddressFragment>, defaultBillingAddress: Maybe<AddressFragment>, membershipHistory: Array<Maybe<membershipHistory>>, addresses: Maybe<Array<Maybe<AddressFragment>>> }
 );
 
