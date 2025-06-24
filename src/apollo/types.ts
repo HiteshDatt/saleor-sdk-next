@@ -21728,7 +21728,7 @@ export type ProductVariantFragment = (
       Pick<AttributeValue, 'id' | 'name'>
       & { value: AttributeValue['name'] }
     )>> }>, product: (
-    Pick<Product, 'id' | 'name' | 'slug' | 'isAvailableForPurchase'>
+    Pick<Product, 'id' | 'name' | 'slug' | 'isAvailableForPurchase' | 'collections'>
     & { weight: Maybe<Pick<Weight, 'unit' | 'value'>>, category: Maybe<Pick<Category, 'id' | 'name' | 'slug'>>, thumbnail: Maybe<Pick<Image, 'url' | 'alt'>>, productType: Pick<ProductType, 'id' | 'isShippingRequired'>, metadata: Array<Maybe<Pick<MetadataItem, 'key' | 'value'>>>, tags: Maybe<Array<Maybe<Pick<TagType, 'name'>>>> }
   ) }
 );
