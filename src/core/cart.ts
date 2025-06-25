@@ -1161,7 +1161,7 @@ export const cart = ({
       checkoutString && typeof checkoutString === "string"
         ? JSON.parse(checkoutString)
         : checkoutString;
-    console.log("checkout1", checkout);
+    console.log("checkout1", JSON.stringify(checkout));
 
     try {
       console.log("inside the try block");
@@ -1188,7 +1188,7 @@ export const cart = ({
             REST_API_METHODS_TYPES.POST,
             input
           );
-          console.log("response of rest api", res);
+          console.log("response of rest api", JSON.stringify(res));
 
           if (res?.data?.token) {
             const updatedLines = res?.data?.lines.map((line: any) => {
