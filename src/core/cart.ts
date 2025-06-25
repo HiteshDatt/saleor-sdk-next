@@ -40,8 +40,10 @@ import {
   UpdateCheckoutLineMutationVariables,
   UpdateCheckoutLineNextMutation,
   UpdateCheckoutLineNextMutationVariables,
+  UserCheckoutDetailsQuery,
+  UserCheckoutDetailsQueryVariables,
 } from "../apollo/types";
-import { GET_LOCAL_CHECKOUT } from "../apollo/queries";
+import { GET_LOCAL_CHECKOUT, USER_CHECKOUT_DETAILS } from "../apollo/queries";
 import { SALEOR_CHECKOUT, SALEOR_CHECKOUT_DISCOUNTS } from "./constants";
 import { getDBIdFromGraphqlId } from "../react/utils/utils";
 import {
@@ -1156,15 +1158,12 @@ export const cart = ({
       },
     });
     const checkoutString = storage.getCheckout();
-    console.log("checkoutString1", checkoutString);
     const checkout: Checkout | null | undefined =
       checkoutString && typeof checkoutString === "string"
         ? JSON.parse(checkoutString)
         : checkoutString;
-    console.log("checkout1", JSON.stringify(checkout));
 
     try {
-      console.log("inside the try block");
       if (checkout && checkout?.token) {
         const dbVariantId = getDBIdFromGraphqlId(variantId, "ProductVariant");
         const lines = [
@@ -1183,17 +1182,24 @@ export const cart = ({
               : {}),
           };
           const fullUrl = `${restApiUrl}${REST_API_ENDPOINTS.ADD_TO_CART}`;
-          const res = await axiosRequest(
+          await axiosRequest(
             fullUrl,
             REST_API_METHODS_TYPES.POST,
             input
           );
-          console.log("response of rest api", JSON.stringify(res));
+          const res = await client.mutate<
+            UserCheckoutDetailsQuery,
+            UserCheckoutDetailsQueryVariables
+          >({
+            mutation: USER_CHECKOUT_DETAILS,
+            variables: {},
+          });
+          console.log("response of graph api in addToCart", JSON.stringify(res));
 
-          if (res?.data?.token) {
-            const updatedLines = res?.data?.lines.map((line: any) => {
+          if (res?.data?.me?.checkout?.token) {
+            const updatedLines = res?.data?.me?.checkout?.lines?.map((line: any) => {
               const productData = {
-                ...line.variant.product,
+                ...line?.variant?.product,
                 metadata: line?.variant?.product?.metadata || [],
                 tags: line?.variant?.product?.tags?.map((tagname: string) => ({
                   name: tagname,
@@ -1229,7 +1235,7 @@ export const cart = ({
             });
             const updatedCheckout = {
               ...checkout,
-              ...res.data,
+              ...res.data.me.checkout,
               lines: updatedLines,
             };
             console.log("updatedCheckout", updatedCheckout);
@@ -1261,14 +1267,13 @@ export const cart = ({
               },
             });
 
-            console.log("before getCheckoutPayments", client, updatedCheckout);
             getCheckoutPayments(client, updatedCheckout);
 
             return {
               data: updatedCheckout,
-              errors: res?.data?.errors || [],
+              errors: res?.data?.me?.checkout?.errors || [],
             };
-          } else if (res?.data?.includes("Checkout ID not found")) {
+          } else if (res?.data?.me?.checkout?.includes("Checkout ID not found")) {
             createCheckoutCartRest(
               lines,
               tags,
@@ -1303,13 +1308,20 @@ export const cart = ({
                 },
               };
           const fullUrl = `${restApiUrl}${REST_API_ENDPOINTS.CREATE_CHECKOUT}`;
-          const res = await axiosRequest(
+          await axiosRequest(
             fullUrl,
             REST_API_METHODS_TYPES.POST,
             createCheckoutInput
           );
-          const createCheckoutRes = res?.data;
-          if (!res?.data?.token) {
+          const res = await client.mutate<
+            UserCheckoutDetailsQuery,
+            UserCheckoutDetailsQueryVariables
+          >({
+            mutation: USER_CHECKOUT_DETAILS,
+            variables: {},
+          });
+          const createCheckoutRes = res?.data?.me?.checkout;
+          if (!res?.data?.me?.checkout?.token) {
             client.writeQuery({
               query: GET_LOCAL_CHECKOUT,
               data: {
@@ -1317,11 +1329,11 @@ export const cart = ({
               },
             });
             return {
-              data: res?.data || undefined,
+              data: res?.data?.me?.checkout || undefined,
               errors: res?.data?.errors,
             };
           }
-          const updatedLines = res?.data?.lines.map((line: any) => {
+          const updatedLines = res?.data?.me?.checkout?.lines?.map((line: any) => {
             const productData = {
               ...line.variant.product,
               metadata: line?.variant?.product?.metadata || [],
@@ -1367,6 +1379,8 @@ export const cart = ({
             ...dummyCheckoutFields,
             ...createCheckoutResUpdated,
           };
+          
+          console.log("this is updated checkout", updatedCheckout);
 
           storage.setCheckout(updatedCheckout);
 
@@ -1406,7 +1420,7 @@ export const cart = ({
           }
 
           const returnObject = {
-            data: res.data,
+            data: res.data?.me?.checkout,
             errors: res?.data?.errors,
           };
 
