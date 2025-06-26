@@ -1182,7 +1182,7 @@ export const cart = ({
               : {}),
           };
           const fullUrl = `${restApiUrl}${REST_API_ENDPOINTS.ADD_TO_CART}`;
-          await axiosRequest(
+          const restRes = await axiosRequest(
             fullUrl,
             REST_API_METHODS_TYPES.POST,
             input
@@ -1271,9 +1271,9 @@ export const cart = ({
 
             return {
               data: updatedCheckout,
-              errors: res?.data?.me?.checkout?.errors || [],
+              errors: restRes?.data?.errors || [],
             };
-          } else if (res?.data?.me?.checkout?.includes("Checkout ID not found")) {
+          } else if (restRes?.data?.errors?.includes("Checkout ID not found")) {
             createCheckoutCartRest(
               lines,
               tags,
@@ -1308,7 +1308,7 @@ export const cart = ({
                 },
               };
           const fullUrl = `${restApiUrl}${REST_API_ENDPOINTS.CREATE_CHECKOUT}`;
-          await axiosRequest(
+          const restRes = await axiosRequest(
             fullUrl,
             REST_API_METHODS_TYPES.POST,
             createCheckoutInput
@@ -1330,7 +1330,7 @@ export const cart = ({
             });
             return {
               data: res?.data?.me?.checkout || undefined,
-              errors: res?.data?.errors,
+              errors: restRes?.data?.errors,
             };
           }
           const updatedLines = res?.data?.me?.checkout?.lines?.map((line: any) => {
@@ -1415,13 +1415,13 @@ export const cart = ({
             await setLocalCheckoutInCache(client, updatedCheckout, true);
             return {
               data: updatedCheckout,
-              errors: res?.data?.errors,
+              errors: restRes?.data?.errors,
             };
           }
 
           const returnObject = {
             data: res.data?.me?.checkout,
-            errors: res?.data?.errors,
+            errors: restRes?.data?.errors,
           };
 
           // client.writeQuery({
