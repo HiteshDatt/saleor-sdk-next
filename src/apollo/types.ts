@@ -21729,7 +21729,7 @@ export type ProductVariantFragment = (
       & { value: AttributeValue['name'] }
     )>> }>, product: (
     Pick<Product, 'id' | 'name' | 'slug' | 'isAvailableForPurchase' | 'collections'>
-    & { collections: Maybe<Pick<Collection, 'id' | 'name' | 'slug'> & {metadata: Array<Maybe<Pick<MetadataItem, 'key' | 'value'>>>}>, weight: Maybe<Pick<Weight, 'unit' | 'value'>>, category: Maybe<Pick<Category, 'id' | 'name' | 'slug'>>, thumbnail: Maybe<Pick<Image, 'url' | 'alt'>>, productType: Pick<ProductType, 'id' | 'isShippingRequired'>, metadata: Array<Maybe<Pick<MetadataItem, 'key' | 'value'>>>, tags: Maybe<Array<Maybe<Pick<TagType, 'name'>>>> }
+    & { weight: Maybe<Pick<Weight, 'unit' | 'value'>>, category: Maybe<Pick<Category, 'id' | 'name' | 'slug'>>, thumbnail: Maybe<Pick<Image, 'url' | 'alt'>>, productType: Pick<ProductType, 'id' | 'isShippingRequired'>, metadata: Array<Maybe<Pick<MetadataItem, 'key' | 'value'>>>, tags: Maybe<Array<Maybe<Pick<TagType, 'name'>>>> }
   ) }
 );
 
@@ -22647,14 +22647,6 @@ export const ProductVariantFragmentDoc = gql`
       id
       isShippingRequired
     }
-    collections {
-            id
-            name
-            metadata {
-              key
-              value
-            }
-          }
     metadata {
       key
       value
