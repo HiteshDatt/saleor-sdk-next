@@ -80,7 +80,7 @@ export const useCartState = () => {
     }, 0) || 0;
 
   const itemDiscount = mrp - netPrice;
-
+console.log("vaibhav123",data?.localCheckoutDiscounts)
   const cartState = {
     items: data?.localCheckout?.lines || [],
     totalPrice: data?.localCheckout?.totalPrice || defaultPrice,
@@ -108,6 +108,7 @@ export const useCartState = () => {
       ) || defaultPrice,
     cashbackRecieve: data?.localCashback || { amount: 0, willAddOn: null },
   };
+  console.log("Cart State:", cartState);
 
   return cartState;
 };
