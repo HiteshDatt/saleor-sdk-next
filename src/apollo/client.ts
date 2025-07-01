@@ -278,30 +278,23 @@ const getTypePolicies = (autologin: boolean): TypedTypePolicies => ({
 
       localCheckoutDiscounts: {
         read(existing) {
+          function withDefaults(obj: any) {
+            return {
+              prepaidDiscount: obj?.prepaidDiscount ?? "0",
+              couponDiscount: obj?.couponDiscount ?? "0",
+              cashbackDiscount: obj?.cashbackDiscount ?? "0",
+              ...(obj?.platformCharge !== undefined && { platformCharge: obj.platformCharge }),
+            };
+          }
           if (!existing) {
             const discountsString = storage.getDiscounts();
             const discounts =
               discountsString && typeof discountsString === "string"
                 ? JSON.parse(discountsString)
                 : discountsString;
-
-            return (
-              discounts?.checkoutDiscounts || {
-                prepaidDiscount: "0",
-                couponDiscount: "0",
-                cashbackDiscount: "0",
-                platformCharge:"0"
-              }
-            );
+            return withDefaults(discounts?.checkoutDiscounts || {});
           }
-          return (
-            existing || {
-              prepaidDiscount: "0",
-              couponDiscount: "0",
-              cashbackDiscount: "0",
-              platformCharge:"0"
-            }
-          );
+          return withDefaults(existing);
         },
       },
       localCashback: {
