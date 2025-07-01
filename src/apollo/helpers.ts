@@ -64,10 +64,11 @@ export const setLocalCheckoutInCache = async (
           shippingPrice: 0,
         },
         localCheckoutDiscounts: {
+          __typename: "DiscountsType",
           prepaidDiscount: "0",
           couponDiscount: "0",
           cashbackDiscount: "0",
-          platformCharge:"0"
+          platformCharge: undefined
         },
         localCashback: {
           amount: "0",
@@ -141,7 +142,7 @@ export const setLocalCheckoutInCache = async (
                   ?.paymentMethod?.cashbackDiscountAmount,
               platformCharge:
                 resShipping.data?.checkoutShippingMethodUpdate?.checkout
-                  ?.paymentMethod?.platformChargeAmount,
+                  ?.paymentMethod?.platformChargeAmount ?? undefined,
             },
             cashback:
               resShipping.data?.checkoutShippingMethodUpdate?.checkout
@@ -201,13 +202,12 @@ export const setLocalCheckoutInCache = async (
           prepaidDiscount: checkout?.paymentMethod?.prepaidDiscountAmount,
           couponDiscount: checkout?.paymentMethod?.couponDiscount,
           cashbackDiscount: checkout?.paymentMethod?.cashbackDiscountAmount,
-          platformCharge: checkout?.paymentMethod?.platformChargeAmount
+          platformCharge: checkout?.paymentMethod?.platformChargeAmount || "",
         },
         cashback: checkout?.cashback,
       },
     };
     storage.setDiscounts(resDiscount.data);
-    console.log(resDiscount,"resDiscount");
     client.writeQuery({
       query: GET_LOCAL_CHECKOUT,
       data: {
@@ -258,7 +258,7 @@ export const getLatestCheckout = async (
                 ?.cashbackDiscountAmount,
             platformCharge:
               checkoutDetailRes?.data?.checkout?.paymentMethod
-                ?.platformChargeAmount
+                ?.platformChargeAmount ?? undefined,
           },
           cashback: checkoutDetailRes?.data?.checkout?.cashback,
         },
@@ -335,10 +335,9 @@ export const checkoutRecalculationUtil = async (
                 ?.couponDiscount,
             cashbackDiscount:
               checkoutDetailRes?.data?.checkoutRecalculation?.paymentMethod
-                ?.cashbackDiscountAmount,
-            platformCharge:
+                ?.cashbackDiscountAmount,              platformCharge:
               checkoutDetailRes?.data?.checkoutRecalculation?.paymentMethod
-                ?.platformChargeAmount,
+                ?.platformChargeAmount ?? undefined,
           },
           cashback: checkoutDetailRes?.data?.checkoutRecalculation?.cashback,
         },
@@ -406,7 +405,7 @@ export const getCheckoutPayments = async (
           cashbackDiscount:
             updatedCheckoutDetails?.paymentMethod?.cashbackDiscountAmount,
           platformCharge:
-            updatedCheckoutDetails?.paymentMethod?.platformChargeAmount
+            updatedCheckoutDetails?.paymentMethod?.platformChargeAmount ?? undefined,
         },
         cashback: updatedCheckoutDetails?.cashback,
       },
