@@ -195,6 +195,7 @@ export const setLocalCheckoutInCache = async (
       });
     }
   } else if (checkout?.token && checkout?.paymentMethod && checkout?.cashback) {
+    console.log({hi:checkout?.paymentMethod})
     const resDiscount = {
       data: {
         __typename: "DiscountsType",
@@ -207,6 +208,7 @@ export const setLocalCheckoutInCache = async (
         cashback: checkout?.cashback,
       },
     };
+    console.log({resDiscount})
     storage.setDiscounts(resDiscount.data);
     client.writeQuery({
       query: GET_LOCAL_CHECKOUT,
