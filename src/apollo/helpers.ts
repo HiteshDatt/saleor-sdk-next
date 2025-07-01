@@ -68,7 +68,7 @@ export const setLocalCheckoutInCache = async (
           prepaidDiscount: "0",
           couponDiscount: "0",
           cashbackDiscount: "0",
-            ...(platformCharge !== undefined ? { platformCharge } : {})
+          platformCharge: undefined
         },
         localCashback: {
           amount: "0",
