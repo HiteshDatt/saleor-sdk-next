@@ -5765,6 +5765,7 @@ export type DiscountsType = {
   couponDiscount: Maybe<Scalars['Decimal']>;
   prepaidDiscount: Maybe<Scalars['Decimal']>;
   cashbackDiscount: Maybe<Scalars['Decimal']>;
+  platformCharge: Maybe<Scalars['Decimal']>;
 };
 
 /** Represents shop's domain. */
@@ -13658,6 +13659,7 @@ export type PaymentMethodType = Node & ObjectWithMetadata & {
    */
   meta: Array<Maybe<MetaStore>>;
   couponDiscount: Maybe<Scalars['String']>;
+  platformChargeAmount: Scalars['Float'];
 };
 
 /** Refunds the captured payment amount. */
@@ -22122,7 +22124,7 @@ export type RemoveCheckoutLineMutationVariables = Exact<{
 
 
 export type RemoveCheckoutLineMutation = { checkoutLineDelete: Maybe<{ checkout: Maybe<(
-      { paymentMethod: Maybe<Pick<PaymentMethodType, 'cashbackDiscountAmount' | 'couponDiscount' | 'prepaidDiscountAmount'>>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>> }
+      { paymentMethod: Maybe<Pick<PaymentMethodType, 'cashbackDiscountAmount' | 'couponDiscount' | 'prepaidDiscountAmount'|'platformChargeAmount'>>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>> }
       & CheckoutFragment
     )>, errors: Array<CheckoutErrorFragment> }> };
 
@@ -22135,7 +22137,7 @@ export type UpdateCheckoutShippingAddressMutationVariables = Exact<{
 
 
 export type UpdateCheckoutShippingAddressMutation = { checkoutShippingAddressUpdate: Maybe<{ errors: Array<CheckoutErrorFragment>, checkout: Maybe<(
-      { paymentMethod: Maybe<Pick<PaymentMethodType, 'cashbackDiscountAmount' | 'couponDiscount' | 'prepaidDiscountAmount'>>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>> }
+      { paymentMethod: Maybe<Pick<PaymentMethodType, 'cashbackDiscountAmount' | 'couponDiscount' | 'prepaidDiscountAmount'|'platformChargeAmount'>>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>> }
       & CheckoutFragment
     )> }>, checkoutEmailUpdate: Maybe<{ checkout: Maybe<CheckoutFragment>, errors: Array<CheckoutErrorFragment> }> };
 
@@ -22148,7 +22150,7 @@ export type UpdateCheckoutShippingAddressNewMutationVariables = Exact<{
 
 
 export type UpdateCheckoutShippingAddressNewMutation = { checkoutShippingAddressUpdate: Maybe<{ errors: Array<CheckoutErrorFragment>, checkout: Maybe<(
-      { paymentMethod: Maybe<Pick<PaymentMethodType, 'cashbackDiscountAmount' | 'couponDiscount' | 'prepaidDiscountAmount'>>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>> }
+      { paymentMethod: Maybe<Pick<PaymentMethodType, 'cashbackDiscountAmount' | 'couponDiscount' | 'prepaidDiscountAmount'|'platformChargeAmount'>>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>> }
       & CheckoutFragment
     )> }> };
 
@@ -22187,7 +22189,7 @@ export type AddCheckoutPromoCodeMutationVariables = Exact<{
 
 
 export type AddCheckoutPromoCodeMutation = { checkoutAddPromoCode: Maybe<{ checkout: Maybe<(
-      { paymentMethod: Maybe<Pick<PaymentMethodType, 'cashbackDiscountAmount' | 'couponDiscount' | 'prepaidDiscountAmount'>>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>> }
+      { paymentMethod: Maybe<Pick<PaymentMethodType, 'cashbackDiscountAmount' | 'couponDiscount' | 'prepaidDiscountAmount'|'platformChargeAmount'>>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>> }
       & CheckoutFragment
     )>, errors: Array<CheckoutErrorFragment> }> };
 
@@ -22199,7 +22201,7 @@ export type RemoveCheckoutPromoCodeMutationVariables = Exact<{
 
 
 export type RemoveCheckoutPromoCodeMutation = { checkoutRemovePromoCode: Maybe<{ checkout: Maybe<(
-      { paymentMethod: Maybe<Pick<PaymentMethodType, 'cashbackDiscountAmount' | 'couponDiscount' | 'prepaidDiscountAmount'>>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>> }
+      { paymentMethod: Maybe<Pick<PaymentMethodType, 'cashbackDiscountAmount' | 'couponDiscount' | 'prepaidDiscountAmount'|'platformChargeAmount'>>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>> }
       & CheckoutFragment
     )>, errors: Array<CheckoutErrorFragment> }> };
 
@@ -22233,7 +22235,7 @@ export type CheckoutPaymentMethodUpdateMutationVariables = Exact<{
 
 
 export type CheckoutPaymentMethodUpdateMutation = { checkoutPaymentMethodUpdate: Maybe<{ checkout: Maybe<(
-      { paymentMethod: Maybe<Pick<PaymentMethodType, 'cashbackDiscountAmount' | 'couponDiscount' | 'prepaidDiscountAmount'>>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>> }
+      { paymentMethod: Maybe<Pick<PaymentMethodType, 'cashbackDiscountAmount' | 'couponDiscount' | 'prepaidDiscountAmount'|'platformChargeAmount'>>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>> }
       & CheckoutFragment
     )>, checkoutErrors: Array<Pick<CheckoutError, 'field' | 'message' | 'code'>> }> };
 
@@ -22322,7 +22324,7 @@ export type CheckoutCustomerAttachNewMutationVariables = Exact<{
 
 
 export type CheckoutCustomerAttachNewMutation = { checkoutCustomerAttach: Maybe<{ checkout: Maybe<(
-      { paymentMethod: Maybe<Pick<PaymentMethodType, 'cashbackDiscountAmount' | 'couponDiscount' | 'prepaidDiscountAmount'>>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>> }
+      { paymentMethod: Maybe<Pick<PaymentMethodType, 'cashbackDiscountAmount' | 'couponDiscount' | 'prepaidDiscountAmount'|'platformChargeAmount'>>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>> }
       & CheckoutFragment
     )> }> };
 
@@ -22335,7 +22337,7 @@ export type AddCheckoutLineNextMutationVariables = Exact<{
 
 
 export type AddCheckoutLineNextMutation = { checkoutLinesAdd: Maybe<{ checkout: Maybe<(
-      { paymentMethod: Maybe<Pick<PaymentMethodType, 'cashbackDiscountAmount' | 'couponDiscount' | 'prepaidDiscountAmount'>>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>> }
+      { paymentMethod: Maybe<Pick<PaymentMethodType, 'cashbackDiscountAmount' | 'couponDiscount' | 'prepaidDiscountAmount'|'platformChargeAmount'>>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>> }
       & CheckoutFragment
     )>, errors: Array<CheckoutErrorFragment> }> };
 
@@ -22345,7 +22347,7 @@ export type CreateCheckoutNextMutationVariables = Exact<{
 
 
 export type CreateCheckoutNextMutation = { checkoutCreate: Maybe<{ errors: Array<CheckoutErrorFragment>, checkout: Maybe<(
-      { paymentMethod: Maybe<Pick<PaymentMethodType, 'cashbackDiscountAmount' | 'couponDiscount' | 'prepaidDiscountAmount'>>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>> }
+      { paymentMethod: Maybe<Pick<PaymentMethodType, 'cashbackDiscountAmount' | 'couponDiscount' | 'prepaidDiscountAmount'|"platformChargeAmount">>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>> }
       & CheckoutFragment
     )> }> };
 
@@ -22357,7 +22359,7 @@ export type UpdateCheckoutShippingMethodNextMutationVariables = Exact<{
 
 
 export type UpdateCheckoutShippingMethodNextMutation = { checkoutShippingMethodUpdate: Maybe<{ checkout: Maybe<(
-      { paymentMethod: Maybe<Pick<PaymentMethodType, 'cashbackDiscountAmount' | 'couponDiscount' | 'prepaidDiscountAmount'>>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>> }
+      { paymentMethod: Maybe<Pick<PaymentMethodType, 'cashbackDiscountAmount' | 'couponDiscount' | 'prepaidDiscountAmount'|'platformChargeAmount'>>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>> }
       & CheckoutFragment
     )>, errors: Array<CheckoutErrorFragment> }> };
 
@@ -22369,7 +22371,7 @@ export type UpdateCheckoutLineNextMutationVariables = Exact<{
 
 
 export type UpdateCheckoutLineNextMutation = { checkoutLinesUpdate: Maybe<{ checkout: Maybe<(
-      { paymentMethod: Maybe<Pick<PaymentMethodType, 'cashbackDiscountAmount' | 'couponDiscount' | 'prepaidDiscountAmount'>>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>> }
+      { paymentMethod: Maybe<Pick<PaymentMethodType, 'cashbackDiscountAmount' | 'couponDiscount' | 'prepaidDiscountAmount'|'platformChargeAmount'>>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>> }
       & CheckoutFragment
     )>, errors: Array<CheckoutErrorFragment> }> };
 
@@ -22407,7 +22409,7 @@ export type CheckoutDetailsNextQueryVariables = Exact<{
 export type CheckoutDetailsNextQuery = (
   Pick<Query, 'checkoutUpdated'>
   & { checkout: Maybe<(
-    { paymentMethod: Maybe<Pick<PaymentMethodType, 'cashbackDiscountAmount' | 'couponDiscount' | 'prepaidDiscountAmount'>>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>> }
+    { paymentMethod: Maybe<Pick<PaymentMethodType, 'cashbackDiscountAmount' | 'couponDiscount' | 'prepaidDiscountAmount'|'platformChargeAmount'>>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>> }
     & CheckoutFragment
   )> }
 );
@@ -22419,7 +22421,7 @@ export type CheckoutPaymentsNextQueryVariables = Exact<{
 
 export type CheckoutPaymentsNextQuery = { checkout: Maybe<(
     Pick<Checkout, 'id' | 'token' | 'voucherCode'>
-    & { totalPrice: Maybe<PriceFragment>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>>, discount: Maybe<Pick<Money, 'amount' | 'currency'>>, paymentMethod: Maybe<Pick<PaymentMethodType, 'cashbackDiscountAmount' | 'couponDiscount' | 'prepaidDiscountAmount'>>, subtotalPrice: Maybe<PriceFragment> }
+    & { totalPrice: Maybe<PriceFragment>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>>, discount: Maybe<Pick<Money, 'amount' | 'currency'>>, paymentMethod: Maybe<Pick<PaymentMethodType, 'cashbackDiscountAmount' | 'couponDiscount' | 'prepaidDiscountAmount'|'platformChargeAmount'>>, subtotalPrice: Maybe<PriceFragment> }
   )> };
 
 export type GetCartItemsQueryVariables = Exact<{ [key: string]: never; }>;
@@ -22432,7 +22434,7 @@ export type GetLocalCheckoutQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetLocalCheckoutQuery = (
   Pick<Query, 'useCashback' | 'checkoutLoading' | 'userWalletBalance'>
-  & { localCheckout: Maybe<CheckoutFragment>, localCheckoutDiscounts: Maybe<Pick<DiscountsType, 'prepaidDiscount' | 'couponDiscount' | 'cashbackDiscount'>>, localCashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>>, recentOrder: Maybe<OrderDetailFragment> }
+  & { localCheckout: Maybe<CheckoutFragment>, localCheckoutDiscounts: Maybe<Pick<DiscountsType, 'prepaidDiscount' | 'couponDiscount' | 'cashbackDiscount'|'platformCharge'>>, localCashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>>, recentOrder: Maybe<OrderDetailFragment> }
 );
 
 export type DiscountsAndCashbackQueryVariables = Exact<{
@@ -22440,7 +22442,7 @@ export type DiscountsAndCashbackQueryVariables = Exact<{
 }>;
 
 
-export type DiscountsAndCashbackQuery = { checkoutDiscounts: Maybe<Pick<DiscountsType, 'prepaidDiscount' | 'couponDiscount' | 'cashbackDiscount'>>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>> };
+export type DiscountsAndCashbackQuery = { checkoutDiscounts: Maybe<Pick<DiscountsType, 'prepaidDiscount' | 'couponDiscount' | 'cashbackDiscount'|'platformCharge'>>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>> };
 
 export type UserCheckoutDetailsQueryVariables = Exact<{checkoutTag?: string | null;}>;
 
@@ -22448,7 +22450,7 @@ export type UserCheckoutDetailsQueryVariables = Exact<{checkoutTag?: string | nu
 export type UserCheckoutDetailsQuery = { me: Maybe<(
     Pick<User, 'id'>
     & { checkout: Maybe<(
-      { paymentMethod: Maybe<Pick<PaymentMethodType, 'cashbackDiscountAmount' | 'couponDiscount' | 'prepaidDiscountAmount'>>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>> }
+      { paymentMethod: Maybe<Pick<PaymentMethodType, 'cashbackDiscountAmount' | 'couponDiscount' | 'prepaidDiscountAmount'|'platformChargeAmount'>>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>> }
       & CheckoutFragment
     )> }
   )> };
@@ -22509,7 +22511,7 @@ export type CheckoutRecalculationQueryVariables = Exact<{
 
 
 export type CheckoutRecalculationQuery = { checkoutRecalculation: Maybe<(
-    { paymentMethod: Maybe<Pick<PaymentMethodType, 'cashbackDiscountAmount' | 'couponDiscount' | 'prepaidDiscountAmount'>>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>> }
+    { paymentMethod: Maybe<Pick<PaymentMethodType, 'cashbackDiscountAmount' | 'couponDiscount' | 'prepaidDiscountAmount'|'platformChargeAmount'>>, cashback: Maybe<Pick<CashbackType, 'amount' | 'willAddOn'>> }
     & CheckoutFragment
   )> };
 
@@ -23657,6 +23659,7 @@ export const RemoveCheckoutLineDocument = gql`
         cashbackDiscountAmount
         couponDiscount
         prepaidDiscountAmount
+        platformChargeAmount
       }
       cashback {
         amount
@@ -23714,6 +23717,7 @@ export const UpdateCheckoutShippingAddressDocument = gql`
         cashbackDiscountAmount
         couponDiscount
         prepaidDiscountAmount
+        platformChargeAmount
       }
       cashback {
         amount
@@ -23782,6 +23786,7 @@ export const UpdateCheckoutShippingAddressNewDocument = gql`
         cashbackDiscountAmount
         couponDiscount
         prepaidDiscountAmount
+        platformChargeAmount
       }
       cashback {
         amount
@@ -23968,6 +23973,7 @@ export const AddCheckoutPromoCodeDocument = gql`
         cashbackDiscountAmount
         couponDiscount
         prepaidDiscountAmount
+        platformChargeAmount
       }
       cashback {
         amount
@@ -24022,6 +24028,7 @@ export const RemoveCheckoutPromoCodeDocument = gql`
         cashbackDiscountAmount
         couponDiscount
         prepaidDiscountAmount
+        platformChargeAmount
       }
       cashback {
         amount
@@ -24170,6 +24177,7 @@ export const CheckoutPaymentMethodUpdateDocument = gql`
         cashbackDiscountAmount
         couponDiscount
         prepaidDiscountAmount
+        platformChargeAmount
       }
       cashback {
         amount
@@ -24684,6 +24692,7 @@ export const CheckoutCustomerAttachNewDocument = gql`
         cashbackDiscountAmount
         couponDiscount
         prepaidDiscountAmount
+        platformChargeAmount
       }
       cashback {
         amount
@@ -24734,6 +24743,7 @@ export const AddCheckoutLineNextDocument = gql`
         cashbackDiscountAmount
         couponDiscount
         prepaidDiscountAmount
+        platformChargeAmount
       }
       cashback {
         amount
@@ -24788,6 +24798,7 @@ export const CreateCheckoutNextDocument = gql`
         cashbackDiscountAmount
         couponDiscount
         prepaidDiscountAmount
+        platformChargeAmount
       }
       cashback {
         amount
@@ -24837,6 +24848,7 @@ export const UpdateCheckoutShippingMethodNextDocument = gql`
         cashbackDiscountAmount
         couponDiscount
         prepaidDiscountAmount
+        platformChargeAmount
       }
       cashback {
         amount
@@ -24891,6 +24903,7 @@ export const UpdateCheckoutLineNextDocument = gql`
         cashbackDiscountAmount
         couponDiscount
         prepaidDiscountAmount
+        platformChargeAmount
       }
       cashback {
         amount
@@ -25052,6 +25065,7 @@ export const CheckoutDetailsNextDocument = gql`
       cashbackDiscountAmount
       couponDiscount
       prepaidDiscountAmount
+      platformChargeAmount
     }
     cashback {
       amount
@@ -25110,6 +25124,7 @@ export const CheckoutPaymentsNextDocument = gql`
       cashbackDiscountAmount
       couponDiscount
       prepaidDiscountAmount
+      platformChargeAmount
     }
     subtotalPrice {
       ...Price
@@ -25188,6 +25203,7 @@ export const GetLocalCheckoutDocument = gql`
     prepaidDiscount
     couponDiscount
     cashbackDiscount
+    platformCharge
   }
   localCashback @client {
     amount
@@ -25280,6 +25296,7 @@ export const UserCheckoutDetailsDocument = gql`
         cashbackDiscountAmount
         couponDiscount
         prepaidDiscountAmount
+        platformChargeAmount
       }
       cashback {
         amount
@@ -25570,6 +25587,7 @@ export const CheckoutRecalculationDocument = gql`
       cashbackDiscountAmount
       couponDiscount
       prepaidDiscountAmount
+      platformChargeAmount
     }
     cashback {
       amount

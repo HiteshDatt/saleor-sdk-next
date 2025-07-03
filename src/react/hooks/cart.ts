@@ -91,6 +91,9 @@ export const useCartState = () => {
     netPrice: createTaxedPriceFromAmount(netPrice || 0) || defaultPrice,
     itemDiscount: createTaxedPriceFromAmount(itemDiscount || 0) || defaultPrice,
     offerDiscount: data?.localCheckout?.totalPrice || defaultPrice,
+    platformCharge: createTaxedPriceFromAmount(
+        data?.localCheckoutDiscounts?.platformCharge
+      ) || defaultPrice,
     prepaidDiscount:
       createTaxedPriceFromAmount(
         data?.localCheckoutDiscounts?.prepaidDiscount

@@ -284,12 +284,16 @@ const getTypePolicies = (autologin: boolean): TypedTypePolicies => ({
               discountsString && typeof discountsString === "string"
                 ? JSON.parse(discountsString)
                 : discountsString;
-
+              const checkoutDiscounts = {
+                ...discounts?.checkoutDiscounts,
+                platformCharge: discounts?.checkoutDiscounts?.platformCharge ? discounts?.checkoutDiscounts?.platformCharge : "0"
+              };
             return (
-              discounts?.checkoutDiscounts || {
+              checkoutDiscounts || {
                 prepaidDiscount: "0",
                 couponDiscount: "0",
                 cashbackDiscount: "0",
+                platformCharge:"0"
               }
             );
           }
@@ -298,6 +302,7 @@ const getTypePolicies = (autologin: boolean): TypedTypePolicies => ({
               prepaidDiscount: "0",
               couponDiscount: "0",
               cashbackDiscount: "0",
+              platformCharge:"0"
             }
           );
         },

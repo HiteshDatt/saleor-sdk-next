@@ -759,6 +759,9 @@ export const checkout = ({
               cashbackDiscount:
                 res?.data?.checkoutAddPromoCode?.checkout?.paymentMethod
                   ?.cashbackDiscountAmount,
+              platformCharge:
+               res?.data?.checkoutAddPromoCode?.checkout?.paymentMethod
+                  ?.platformChargeAmount,
             },
             cashback: res?.data?.checkoutAddPromoCode?.checkout?.cashback,
           },
@@ -845,6 +848,9 @@ export const checkout = ({
               cashbackDiscount:
                 res?.data?.checkoutRemovePromoCode?.checkout?.paymentMethod
                   ?.cashbackDiscountAmount,
+              platformCharge:
+                res?.data?.checkoutRemovePromoCode?.checkout?.paymentMethod
+                  ?.platformChargeAmount,
             },
             cashback: res?.data?.checkoutRemovePromoCode?.checkout?.cashback,
           },
@@ -1641,6 +1647,9 @@ export const checkout = ({
               cashbackDiscount:
                 checkoutDetailRes?.data?.checkoutRecalculation?.paymentMethod
                   ?.cashbackDiscountAmount,
+               platformCharge:
+                checkoutDetailRes?.data?.checkoutRecalculation?.paymentMethod
+                  ?.platformChargeAmount
             },
             cashback: checkoutDetailRes?.data?.checkoutRecalculation?.cashback,
           },

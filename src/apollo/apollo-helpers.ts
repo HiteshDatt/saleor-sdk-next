@@ -1927,11 +1927,12 @@ export type DiscountErrorFieldPolicy = {
 	message?: FieldPolicy<any> | FieldReadFunction<any>,
 	code?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type DiscountsTypeKeySpecifier = ('couponDiscount' | 'prepaidDiscount' | 'cashbackDiscount' | DiscountsTypeKeySpecifier)[];
+export type DiscountsTypeKeySpecifier = ('couponDiscount' | 'prepaidDiscount' | 'cashbackDiscount' | 'platformCharge'| DiscountsTypeKeySpecifier)[];
 export type DiscountsTypeFieldPolicy = {
 	couponDiscount?: FieldPolicy<any> | FieldReadFunction<any>,
 	prepaidDiscount?: FieldPolicy<any> | FieldReadFunction<any>,
-	cashbackDiscount?: FieldPolicy<any> | FieldReadFunction<any>
+	cashbackDiscount?: FieldPolicy<any> | FieldReadFunction<any>,
+	platformCharge?:FieldPolicy<any> | FieldReadFunction<any>
 };
 export type DomainKeySpecifier = ('host' | 'sslEnabled' | 'url' | DomainKeySpecifier)[];
 export type DomainFieldPolicy = {
@@ -4134,7 +4135,7 @@ export type PaymentInitializedFieldPolicy = {
 	name?: FieldPolicy<any> | FieldReadFunction<any>,
 	data?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type PaymentMethodTypeKeySpecifier = ('id' | 'checkout' | 'prepaidDiscountAmount' | 'cashbackDiscountAmount' | 'gateway' | 'useCashback' | 'created' | 'updated' | 'privateMetadata' | 'metadata' | 'privateMeta' | 'meta' | 'couponDiscount' | PaymentMethodTypeKeySpecifier)[];
+export type PaymentMethodTypeKeySpecifier = ('id' | 'checkout' | 'prepaidDiscountAmount' | 'cashbackDiscountAmount' | 'gateway' | 'useCashback' | 'created' | 'updated' | 'privateMetadata' | 'metadata' | 'privateMeta' | 'meta' | 'couponDiscount'|'platformCharge' | PaymentMethodTypeKeySpecifier)[];
 export type PaymentMethodTypeFieldPolicy = {
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	checkout?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -4148,7 +4149,8 @@ export type PaymentMethodTypeFieldPolicy = {
 	metadata?: FieldPolicy<any> | FieldReadFunction<any>,
 	privateMeta?: FieldPolicy<any> | FieldReadFunction<any>,
 	meta?: FieldPolicy<any> | FieldReadFunction<any>,
-	couponDiscount?: FieldPolicy<any> | FieldReadFunction<any>
+	couponDiscount?: FieldPolicy<any> | FieldReadFunction<any>,
+	platformChargeAmount?: FieldPolicy<any> | FieldReadFunction<any>,
 };
 export type PaymentRefundKeySpecifier = ('errors' | 'payment' | 'paymentErrors' | PaymentRefundKeySpecifier)[];
 export type PaymentRefundFieldPolicy = {

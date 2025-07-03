@@ -39,6 +39,7 @@ export const CHECKOUT_DETAILS_NEXT = gql`
         cashbackDiscountAmount
         couponDiscount
         prepaidDiscountAmount
+        platformChargeAmount
       }
       cashback {
         amount
@@ -72,6 +73,7 @@ export const CHECKOUT_PAYMENTS_NEXT = gql`
         cashbackDiscountAmount
         couponDiscount
         prepaidDiscountAmount
+        platformChargeAmount
       }
       shippingMethod {
         ...ShippingMethod
@@ -106,6 +108,7 @@ export const GET_LOCAL_CHECKOUT = gql`
       prepaidDiscount
       couponDiscount
       cashbackDiscount
+      platformCharge
     }
     localCashback @client {
       amount
@@ -126,6 +129,7 @@ export const GET_DISCOUNT_CASHBACK_QUERY = gql`
       prepaidDiscount
       couponDiscount
       cashbackDiscount
+      platformCharge
     }
     cashback(checkoutToken: $token) {
       amount
@@ -145,6 +149,7 @@ export const USER_CHECKOUT_DETAILS = gql`
           cashbackDiscountAmount
           couponDiscount
           prepaidDiscountAmount
+          platformChargeAmount
         }
         cashback {
           amount
@@ -329,6 +334,7 @@ export const CHECKOUT_RECALCULATION = gql`
         cashbackDiscountAmount
         couponDiscount
         prepaidDiscountAmount
+        platformChargeAmount
       }
       cashback {
         amount
