@@ -267,7 +267,7 @@ export const cart = ({
             cashbackDiscount:
               updatedCheckout?.paymentMethod?.cashbackDiscountAmount,
             platformCharge:
-              updatedCheckout?.paymentMethod?.platformChargeAmount,
+              updatedCheckout?.paymentMethod?.platformChargeAmount || 0,
           },
           cashback: updatedCheckout?.cashback,
         },
@@ -534,7 +534,7 @@ export const cart = ({
                   ?.cashbackDiscountAmount,
               platformCharge:
                 res?.data?.checkoutLineDelete?.checkout?.paymentMethod
-                  ?.platformChargeAmount
+                  ?.platformChargeAmount || 0
             },
             cashback: res?.data?.checkoutLineDelete?.checkout?.cashback,
           },
@@ -691,7 +691,7 @@ export const cart = ({
                   cashbackDiscount:
                     updatedCheckout?.paymentMethod?.cashbackDiscountAmount,
                   platformCharge:
-                    updatedCheckout?.paymentMethod?.platformChargeAmount,
+                    updatedCheckout?.paymentMethod?.platformChargeAmount || 0,
                 },
                 cashback: res?.data?.cashback,
               },
@@ -948,7 +948,7 @@ export const cart = ({
                   ?.cashbackDiscountAmount,
               platformCharge:
                 res.data?.checkoutLinesAdd?.checkout?.paymentMethod
-                  ?.platformChargeAmount,
+                  ?.platformChargeAmount || 0,
             },
             cashback: res.data?.checkoutLinesAdd?.checkout?.cashback,
           },
@@ -1097,7 +1097,7 @@ export const cart = ({
                   ?.cashbackDiscountAmount,
               platformCharge:
                 res.data?.checkoutCreate?.checkout?.paymentMethod
-                  ?.platformChargeAmount,
+                  ?.platformChargeAmount || 0,
             },
             cashback: res.data?.checkoutCreate?.checkout?.cashback,
           },
@@ -1176,6 +1176,7 @@ export const cart = ({
         : checkoutString;
 
     try {
+      console.log("checkout latest v1", checkout)
       if (checkout && checkout?.token) {
         const dbVariantId = getDBIdFromGraphqlId(variantId, "ProductVariant");
         const lines = [
@@ -1242,7 +1243,7 @@ export const cart = ({
               ...res.data,
               lines: updatedLines,
             };
-            console.log({updatedCheckout,res,checkout})
+            console.log("checkout latest updatedCheckout v1", updatedCheckout)
             storage.setCheckout(updatedCheckout);
             const result = {
               data: {
@@ -1255,12 +1256,12 @@ export const cart = ({
                   cashbackDiscount:
                     updatedCheckout?.paymentMethod?.cashbackDiscountAmount,
                   platformCharge:
-                    updatedCheckout?.paymentMethod?.platformChargeAmount,
+                    updatedCheckout?.paymentMethod?.platformChargeAmount || 0,
                 },
                 cashback: updatedCheckout?.cashback,
               },
             };
-
+            console.log("checkout latest result v1", result)    
             storage.setDiscounts(result.data);
 
             client.writeQuery({
@@ -1390,14 +1391,14 @@ export const cart = ({
                 couponDiscount: updatedCheckout?.paymentMethod?.couponDiscount,
                 cashbackDiscount:
                   updatedCheckout?.paymentMethod?.cashbackDiscountAmount,
-                platformCharge: updatedCheckout?.paymentMethod?.platformChargeAmount
+                platformCharge: updatedCheckout?.paymentMethod?.platformChargeAmount || 0
               },
               cashback: updatedCheckout?.cashback,
             },
           };
 
           storage.setDiscounts(resDiscount.data);
-
+          console.log("checkout latest resDiscount v1", resDiscount) 
           client.writeQuery({
             query: GET_LOCAL_CHECKOUT,
             data: {
@@ -1410,6 +1411,7 @@ export const cart = ({
           getCheckoutPayments(client, updatedCheckout);
 
           if (useDummyAddress) {
+            console.log("checkout latest useDummyAddress v1", useDummyAddress) 
             await setLocalCheckoutInCache(client, updatedCheckout, true);
             return {
               data: updatedCheckout,
@@ -1595,7 +1597,7 @@ export const cart = ({
                       updatedCheckout?.paymentMethod?.couponDiscount,
                     cashbackDiscount:
                       updatedCheckout?.paymentMethod?.cashbackDiscountAmount,
-                    platformCharge:updatedCheckout?.paymentMethod?.platformChargeAmount
+                    platformCharge:updatedCheckout?.paymentMethod?.platformChargeAmount || 0
                   },
                   cashback: res?.data?.cashback,
                 },
@@ -1725,7 +1727,7 @@ export const cart = ({
                     ?.cashbackDiscountAmount,
                 platformCharge:
                   res?.data?.checkoutLinesUpdate?.checkout?.paymentMethod
-                    ?.platformChargeAmount,
+                    ?.platformChargeAmount || 0,
               },
               cashback: res?.data?.checkoutLinesUpdate?.checkout?.cashback,
             },
@@ -1886,7 +1888,7 @@ export const cart = ({
               cashbackDiscount:
                 updatedCheckout?.paymentMethod?.cashbackDiscountAmount,
               platformCharge:
-                updatedCheckout?.paymentMethod?.platformChargeAmount,
+                updatedCheckout?.paymentMethod?.platformChargeAmount || 0,
             },
             cashback: updatedCheckout?.cashback,
           },
@@ -2001,7 +2003,7 @@ export const cart = ({
               cashbackDiscount:
                 updatedCheckout?.paymentMethod?.cashbackDiscountAmount,
               platformCharge:
-                updatedCheckout?.paymentMethod?.platformChargeAmount,
+                updatedCheckout?.paymentMethod?.platformChargeAmount || 0,
             },
             cashback: updatedCheckout?.cashback,
           },
@@ -2136,7 +2138,7 @@ export const cart = ({
                   ?.cashbackDiscountAmount,
               platformCharge:
                 res?.data?.checkoutLinesUpdate?.checkout?.paymentMethod
-                  ?.platformChargeAmount
+                  ?.platformChargeAmount || 0
             },
             cashback: res?.data?.checkoutLinesUpdate?.checkout?.cashback,
           },
@@ -2230,7 +2232,7 @@ export const cart = ({
                   ?.cashbackDiscountAmount,
               platformCharge:
                 res?.data?.checkoutCreate?.checkout?.paymentMethod
-                  ?.platformChargeAmount,
+                  ?.platformChargeAmount || 0,
             },
             cashback: res?.data?.checkoutCreate?.checkout?.cashback,
           },
