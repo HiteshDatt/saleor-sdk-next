@@ -1242,6 +1242,7 @@ export const cart = ({
               ...res.data,
               lines: updatedLines,
             };
+            console.log({updatedCheckout,res,checkout})
             storage.setCheckout(updatedCheckout);
             const result = {
               data: {
