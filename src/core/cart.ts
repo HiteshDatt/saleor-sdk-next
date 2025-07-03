@@ -1176,6 +1176,7 @@ export const cart = ({
         : checkoutString;
 
     try {
+      console.log("checkout latest v1", checkout)
       if (checkout && checkout?.token) {
         const dbVariantId = getDBIdFromGraphqlId(variantId, "ProductVariant");
         const lines = [
