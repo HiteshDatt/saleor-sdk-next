@@ -267,7 +267,7 @@ export const cart = ({
             cashbackDiscount:
               updatedCheckout?.paymentMethod?.cashbackDiscountAmount,
             platformCharge:
-              updatedCheckout?.paymentMethod?.platformChargeAmount,
+              updatedCheckout?.paymentMethod?.platformChargeAmount || "0",
           },
           cashback: updatedCheckout?.cashback,
         },
@@ -534,7 +534,7 @@ export const cart = ({
                   ?.cashbackDiscountAmount,
               platformCharge:
                 res?.data?.checkoutLineDelete?.checkout?.paymentMethod
-                  ?.platformChargeAmount
+                  ?.platformChargeAmount || "0"
             },
             cashback: res?.data?.checkoutLineDelete?.checkout?.cashback,
           },
@@ -691,7 +691,7 @@ export const cart = ({
                   cashbackDiscount:
                     updatedCheckout?.paymentMethod?.cashbackDiscountAmount,
                   platformCharge:
-                    updatedCheckout?.paymentMethod?.platformChargeAmount,
+                    updatedCheckout?.paymentMethod?.platformChargeAmount || "0",
                 },
                 cashback: res?.data?.cashback,
               },
@@ -948,7 +948,7 @@ export const cart = ({
                   ?.cashbackDiscountAmount,
               platformCharge:
                 res.data?.checkoutLinesAdd?.checkout?.paymentMethod
-                  ?.platformChargeAmount,
+                  ?.platformChargeAmount || "0",
             },
             cashback: res.data?.checkoutLinesAdd?.checkout?.cashback,
           },
@@ -1097,7 +1097,7 @@ export const cart = ({
                   ?.cashbackDiscountAmount,
               platformCharge:
                 res.data?.checkoutCreate?.checkout?.paymentMethod
-                  ?.platformChargeAmount,
+                  ?.platformChargeAmount || "0",
             },
             cashback: res.data?.checkoutCreate?.checkout?.cashback,
           },
@@ -1216,8 +1216,8 @@ export const cart = ({
                   ? line_item?.variant?.quantityAvailable
                   : line.variant.quantityAvailable || 50;
 
-              const updatedLineVariantAttributes =
-                line?.variant?.attributes?.map((item: any) => {
+              const updatedLineVariantAttributes = line?.variant?.attributes?.map(
+                (item: any) => {
                   return {
                     ...item,
                     values: item.values?.map((valueItem: any) => ({
@@ -1225,7 +1225,8 @@ export const cart = ({
                       value: valueItem.value || valueItem.name,
                     })),
                   };
-                });
+                }
+              );
               const lineWithProduct = {
                 ...line,
                 variant: {
@@ -1254,7 +1255,7 @@ export const cart = ({
                   cashbackDiscount:
                     updatedCheckout?.paymentMethod?.cashbackDiscountAmount,
                   platformCharge:
-                    updatedCheckout?.paymentMethod?.platformChargeAmount,
+                    updatedCheckout?.paymentMethod?.platformChargeAmount || "0",
                 },
                 cashback: updatedCheckout?.cashback,
               },
@@ -1389,7 +1390,7 @@ export const cart = ({
                 couponDiscount: updatedCheckout?.paymentMethod?.couponDiscount,
                 cashbackDiscount:
                   updatedCheckout?.paymentMethod?.cashbackDiscountAmount,
-                platformCharge: updatedCheckout?.paymentMethod?.platformChargeAmount
+                platformCharge: updatedCheckout?.paymentMethod?.platformChargeAmount || "0"
               },
               cashback: updatedCheckout?.cashback,
             },
@@ -1594,7 +1595,8 @@ export const cart = ({
                       updatedCheckout?.paymentMethod?.couponDiscount,
                     cashbackDiscount:
                       updatedCheckout?.paymentMethod?.cashbackDiscountAmount,
-                    platformCharge:updatedCheckout?.paymentMethod?.platformChargeAmount
+                    platformCharge:
+                      updatedCheckout?.paymentMethod?.platformChargeAmount || "0"
                   },
                   cashback: res?.data?.cashback,
                 },
@@ -1724,7 +1726,7 @@ export const cart = ({
                     ?.cashbackDiscountAmount,
                 platformCharge:
                   res?.data?.checkoutLinesUpdate?.checkout?.paymentMethod
-                    ?.platformChargeAmount,
+                    ?.platformChargeAmount || "0",
               },
               cashback: res?.data?.checkoutLinesUpdate?.checkout?.cashback,
             },
@@ -1885,7 +1887,7 @@ export const cart = ({
               cashbackDiscount:
                 updatedCheckout?.paymentMethod?.cashbackDiscountAmount,
               platformCharge:
-                updatedCheckout?.paymentMethod?.platformChargeAmount,
+                updatedCheckout?.paymentMethod?.platformChargeAmount || "0",
             },
             cashback: updatedCheckout?.cashback,
           },
@@ -2000,7 +2002,7 @@ export const cart = ({
               cashbackDiscount:
                 updatedCheckout?.paymentMethod?.cashbackDiscountAmount,
               platformCharge:
-                updatedCheckout?.paymentMethod?.platformChargeAmount,
+                updatedCheckout?.paymentMethod?.platformChargeAmount || "0",
             },
             cashback: updatedCheckout?.cashback,
           },
@@ -2135,7 +2137,7 @@ export const cart = ({
                   ?.cashbackDiscountAmount,
               platformCharge:
                 res?.data?.checkoutLinesUpdate?.checkout?.paymentMethod
-                  ?.platformChargeAmount
+                  ?.platformChargeAmount || "0"
             },
             cashback: res?.data?.checkoutLinesUpdate?.checkout?.cashback,
           },
@@ -2229,7 +2231,7 @@ export const cart = ({
                   ?.cashbackDiscountAmount,
               platformCharge:
                 res?.data?.checkoutCreate?.checkout?.paymentMethod
-                  ?.platformChargeAmount,
+                  ?.platformChargeAmount || "0",
             },
             cashback: res?.data?.checkoutCreate?.checkout?.cashback,
           },
@@ -2246,19 +2248,43 @@ export const cart = ({
           },
         });
 
-        if (updateShippingMethod) {
+        if (useDummyAddress) {
           await setLocalCheckoutInCache(
             client,
             res?.data?.checkoutCreate?.checkout,
             true
           );
+          return {
+            data: res.data?.checkoutCreate?.checkout,
+            errors: res?.data?.checkoutCreate?.errors,
+          };
         }
+
+        let returnObject = {
+          data: res.data?.checkoutCreate?.checkout,
+          errors: res?.data?.checkoutCreate?.errors,
+        };
+
+        client.writeQuery({
+          query: GET_LOCAL_CHECKOUT,
+          data: {
+            checkoutLoading: false,
+          },
+        });
+        return returnObject;
+      } catch {
+        await getLatestCheckout(client, checkout);
+        client.writeQuery({
+          query: GET_LOCAL_CHECKOUT,
+          data: {
+            checkoutLoading: false,
+          },
+        });
+        return {
+          data: null,
+          errors: undefined,
+        };
       }
-      const returnObject = {
-        data: res.data?.checkoutCreate?.checkout,
-        errors: res.data?.checkoutCreate?.errors,
-      };
-      return returnObject;
     }
   };
 
