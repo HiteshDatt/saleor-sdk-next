@@ -1239,12 +1239,11 @@ export const cart = ({
               return lineWithProduct;
             });
             const updatedCheckout = {
-              ...dummyCheckoutFields,
               ...checkout,
               ...res.data,
               lines: updatedLines,
             };
-            console.log("updatedCheckout v1", updatedCheckout)
+            console.log("checkout latest updatedCheckout v1", updatedCheckout)
             storage.setCheckout(updatedCheckout);
             const result = {
               data: {
@@ -1262,7 +1261,7 @@ export const cart = ({
                 cashback: updatedCheckout?.cashback,
               },
             };
-
+            console.log("checkout latest result v1", result)    
             storage.setDiscounts(result.data);
 
             client.writeQuery({
@@ -1392,14 +1391,14 @@ export const cart = ({
                 couponDiscount: updatedCheckout?.paymentMethod?.couponDiscount,
                 cashbackDiscount:
                   updatedCheckout?.paymentMethod?.cashbackDiscountAmount,
-                platformCharge: updatedCheckout?.paymentMethod?.platformChargeAmount
+                platformCharge: updatedCheckout?.paymentMethod?.platformChargeAmount || 0
               },
               cashback: updatedCheckout?.cashback,
             },
           };
 
           storage.setDiscounts(resDiscount.data);
-
+          console.log("checkout latest resDiscount v1", resDiscount) 
           client.writeQuery({
             query: GET_LOCAL_CHECKOUT,
             data: {
@@ -1412,6 +1411,7 @@ export const cart = ({
           getCheckoutPayments(client, updatedCheckout);
 
           if (useDummyAddress) {
+            console.log("checkout latest useDummyAddress v1", useDummyAddress) 
             await setLocalCheckoutInCache(client, updatedCheckout, true);
             return {
               data: updatedCheckout,
