@@ -284,9 +284,14 @@ const getTypePolicies = (autologin: boolean): TypedTypePolicies => ({
               discountsString && typeof discountsString === "string"
                 ? JSON.parse(discountsString)
                 : discountsString;
-
+              const checkoutDiscounts = {
+                prepaidDiscount: discounts?.checkoutDiscounts?.prepaidDiscount ?? "0",
+                couponDiscount: discounts?.checkoutDiscounts?.couponDiscount ?? "0",
+                cashbackDiscount: discounts?.checkoutDiscounts?.cashbackDiscount ?? "0",
+                platformCharge: discounts?.checkoutDiscounts?.platformCharge ?? "0",
+              };
             return (
-              discounts?.checkoutDiscounts || {
+              checkoutDiscounts || {
                 prepaidDiscount: "0",
                 couponDiscount: "0",
                 cashbackDiscount: "0",
