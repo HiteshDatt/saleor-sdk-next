@@ -285,6 +285,7 @@ const getTypePolicies = (autologin: boolean): TypedTypePolicies => ({
                 ? JSON.parse(discountsString)
                 : discountsString;
               const checkoutDiscounts = {
+                ...discounts?.checkoutDiscounts,
                 prepaidDiscount: discounts?.checkoutDiscounts?.prepaidDiscount ? discounts?.checkoutDiscounts?.prepaidDiscount: "0",
                 couponDiscount: discounts?.checkoutDiscounts?.couponDiscount ?discounts?.checkoutDiscounts?.couponDiscount : "0",
                 cashbackDiscount: discounts?.checkoutDiscounts?.cashbackDiscount ? discounts?.checkoutDiscounts?.cashbackDiscount : "0",

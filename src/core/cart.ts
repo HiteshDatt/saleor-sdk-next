@@ -2213,7 +2213,7 @@ export const cart = ({
 
       if (res?.data?.checkoutCreate?.checkout?.id) {
         storage.setCheckout(res?.data?.checkoutCreate?.checkout);
-
+        console.log("res?.data?.checkoutCreate?.checkout", res?.data?.checkoutCreate?.checkout);
         const resDiscount = {
           data: {
             __typename: "DiscountsType",
