@@ -141,7 +141,7 @@ export const setLocalCheckoutInCache = async (
                   ?.paymentMethod?.cashbackDiscountAmount,
               platformCharge:
                 resShipping.data?.checkoutShippingMethodUpdate?.checkout
-                  ?.paymentMethod?.platformChargeAmount,
+                  ?.paymentMethod?.platformChargeAmount || 0,
             },
             cashback:
               resShipping.data?.checkoutShippingMethodUpdate?.checkout
@@ -201,13 +201,13 @@ export const setLocalCheckoutInCache = async (
           prepaidDiscount: checkout?.paymentMethod?.prepaidDiscountAmount,
           couponDiscount: checkout?.paymentMethod?.couponDiscount,
           cashbackDiscount: checkout?.paymentMethod?.cashbackDiscountAmount,
-          platformCharge: checkout?.paymentMethod?.platformChargeAmount
+          platformCharge: checkout?.paymentMethod?.platformChargeAmount || 0
         },
         cashback: checkout?.cashback,
       },
     };
     storage.setDiscounts(resDiscount.data);
-    console.log(resDiscount,"resDiscount");
+    
     client.writeQuery({
       query: GET_LOCAL_CHECKOUT,
       data: {
@@ -258,7 +258,7 @@ export const getLatestCheckout = async (
                 ?.cashbackDiscountAmount,
             platformCharge:
               checkoutDetailRes?.data?.checkout?.paymentMethod
-                ?.platformChargeAmount
+                ?.platformChargeAmount || 0
           },
           cashback: checkoutDetailRes?.data?.checkout?.cashback,
         },
@@ -338,7 +338,7 @@ export const checkoutRecalculationUtil = async (
                 ?.cashbackDiscountAmount,
             platformCharge:
               checkoutDetailRes?.data?.checkoutRecalculation?.paymentMethod
-                ?.platformChargeAmount,
+                ?.platformChargeAmount || 0,
           },
           cashback: checkoutDetailRes?.data?.checkoutRecalculation?.cashback,
         },
@@ -406,7 +406,7 @@ export const getCheckoutPayments = async (
           cashbackDiscount:
             updatedCheckoutDetails?.paymentMethod?.cashbackDiscountAmount,
           platformCharge:
-            updatedCheckoutDetails?.paymentMethod?.platformChargeAmount
+            updatedCheckoutDetails?.paymentMethod?.platformChargeAmount || "0"
         },
         cashback: updatedCheckoutDetails?.cashback,
       },
