@@ -207,7 +207,7 @@ export const setLocalCheckoutInCache = async (
       },
     };
     storage.setDiscounts(resDiscount.data);
-    console.log(resDiscount,"resDiscount");
+    
     client.writeQuery({
       query: GET_LOCAL_CHECKOUT,
       data: {

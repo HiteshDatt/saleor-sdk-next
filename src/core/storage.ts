@@ -125,7 +125,6 @@ export const createStorage = (autologinEnabled: boolean): void => {
 
   const setCheckout = (checkout: any) => {
     checkoutStorage = checkout;
-    console.log({vaibhav567:checkout})
     localStorage.setItem(SALEOR_CHECKOUT, JSON.stringify(checkout));
   };
 

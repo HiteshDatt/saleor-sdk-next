@@ -1176,7 +1176,7 @@ export const cart = ({
         : checkoutString;
 
     try {
-      console.log("checkout latest v1", checkout)
+
       if (checkout && checkout?.token) {
         const dbVariantId = getDBIdFromGraphqlId(variantId, "ProductVariant");
         const lines = [
@@ -1243,7 +1243,7 @@ export const cart = ({
               ...res.data,
               lines: updatedLines,
             };
-            console.log("checkout latest updatedCheckout v1", updatedCheckout)
+
             storage.setCheckout(updatedCheckout);
             const result = {
               data: {
@@ -1261,7 +1261,7 @@ export const cart = ({
                 cashback: updatedCheckout?.cashback,
               },
             };
-            console.log("checkout latest result v1", result)    
+
             storage.setDiscounts(result.data);
 
             client.writeQuery({
@@ -1398,7 +1398,7 @@ export const cart = ({
           };
 
           storage.setDiscounts(resDiscount.data);
-          console.log("checkout latest resDiscount v1", resDiscount) 
+
           client.writeQuery({
             query: GET_LOCAL_CHECKOUT,
             data: {
@@ -1411,7 +1411,7 @@ export const cart = ({
           getCheckoutPayments(client, updatedCheckout);
 
           if (useDummyAddress) {
-            console.log("checkout latest useDummyAddress v1", useDummyAddress) 
+
             await setLocalCheckoutInCache(client, updatedCheckout, true);
             return {
               data: updatedCheckout,
@@ -2216,7 +2216,7 @@ export const cart = ({
 
       if (res?.data?.checkoutCreate?.checkout?.id) {
         storage.setCheckout(res?.data?.checkoutCreate?.checkout);
-        console.log("res?.data?.checkoutCreate?.checkout", res?.data?.checkoutCreate?.checkout);
+
         const resDiscount = {
           data: {
             __typename: "DiscountsType",

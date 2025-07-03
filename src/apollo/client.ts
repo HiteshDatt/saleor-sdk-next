@@ -290,7 +290,7 @@ const getTypePolicies = (autologin: boolean): TypedTypePolicies => ({
                 cashbackDiscount: discounts?.checkoutDiscounts?.cashbackDiscount ? discounts?.checkoutDiscounts?.cashbackDiscount : "0",
                 platformCharge: discounts?.checkoutDiscounts?.platformCharge ? discounts?.checkoutDiscounts?.platformCharge : "0",
               };
-            console.log("checkout latest checkoutDiscounts", checkoutDiscounts)
+
             return (
               checkoutDiscounts || {
                 prepaidDiscount: "0",
