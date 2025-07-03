@@ -93,7 +93,7 @@ export const useCartState = () => {
     offerDiscount: data?.localCheckout?.totalPrice || defaultPrice,
     platformCharge: createTaxedPriceFromAmount(
         data?.localCheckoutDiscounts?.platformCharge
-      ) || defaultPrice,
+      ) || defaultPrice || 0,
     prepaidDiscount:
       createTaxedPriceFromAmount(
         data?.localCheckoutDiscounts?.prepaidDiscount

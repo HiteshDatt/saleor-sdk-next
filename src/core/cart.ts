@@ -267,7 +267,7 @@ export const cart = ({
             cashbackDiscount:
               updatedCheckout?.paymentMethod?.cashbackDiscountAmount,
             platformCharge:
-              updatedCheckout?.paymentMethod?.platformChargeAmount,
+              updatedCheckout?.paymentMethod?.platformChargeAmount || 0,
           },
           cashback: updatedCheckout?.cashback,
         },
@@ -534,7 +534,7 @@ export const cart = ({
                   ?.cashbackDiscountAmount,
               platformCharge:
                 res?.data?.checkoutLineDelete?.checkout?.paymentMethod
-                  ?.platformChargeAmount
+                  ?.platformChargeAmount || 0
             },
             cashback: res?.data?.checkoutLineDelete?.checkout?.cashback,
           },
@@ -691,7 +691,7 @@ export const cart = ({
                   cashbackDiscount:
                     updatedCheckout?.paymentMethod?.cashbackDiscountAmount,
                   platformCharge:
-                    updatedCheckout?.paymentMethod?.platformChargeAmount,
+                    updatedCheckout?.paymentMethod?.platformChargeAmount || 0,
                 },
                 cashback: res?.data?.cashback,
               },
@@ -948,7 +948,7 @@ export const cart = ({
                   ?.cashbackDiscountAmount,
               platformCharge:
                 res.data?.checkoutLinesAdd?.checkout?.paymentMethod
-                  ?.platformChargeAmount,
+                  ?.platformChargeAmount || 0,
             },
             cashback: res.data?.checkoutLinesAdd?.checkout?.cashback,
           },
@@ -1097,7 +1097,7 @@ export const cart = ({
                   ?.cashbackDiscountAmount,
               platformCharge:
                 res.data?.checkoutCreate?.checkout?.paymentMethod
-                  ?.platformChargeAmount,
+                  ?.platformChargeAmount || 0,
             },
             cashback: res.data?.checkoutCreate?.checkout?.cashback,
           },
@@ -1176,6 +1176,7 @@ export const cart = ({
         : checkoutString;
 
     try {
+
       if (checkout && checkout?.token) {
         const dbVariantId = getDBIdFromGraphqlId(variantId, "ProductVariant");
         const lines = [
@@ -1242,6 +1243,7 @@ export const cart = ({
               ...res.data,
               lines: updatedLines,
             };
+
             storage.setCheckout(updatedCheckout);
             const result = {
               data: {
@@ -1254,7 +1256,7 @@ export const cart = ({
                   cashbackDiscount:
                     updatedCheckout?.paymentMethod?.cashbackDiscountAmount,
                   platformCharge:
-                    updatedCheckout?.paymentMethod?.platformChargeAmount,
+                    updatedCheckout?.paymentMethod?.platformChargeAmount || 0,
                 },
                 cashback: updatedCheckout?.cashback,
               },
@@ -1389,7 +1391,7 @@ export const cart = ({
                 couponDiscount: updatedCheckout?.paymentMethod?.couponDiscount,
                 cashbackDiscount:
                   updatedCheckout?.paymentMethod?.cashbackDiscountAmount,
-                platformCharge: updatedCheckout?.paymentMethod?.platformChargeAmount
+                platformCharge: updatedCheckout?.paymentMethod?.platformChargeAmount || 0
               },
               cashback: updatedCheckout?.cashback,
             },
@@ -1409,6 +1411,7 @@ export const cart = ({
           getCheckoutPayments(client, updatedCheckout);
 
           if (useDummyAddress) {
+
             await setLocalCheckoutInCache(client, updatedCheckout, true);
             return {
               data: updatedCheckout,
@@ -1594,7 +1597,7 @@ export const cart = ({
                       updatedCheckout?.paymentMethod?.couponDiscount,
                     cashbackDiscount:
                       updatedCheckout?.paymentMethod?.cashbackDiscountAmount,
-                    platformCharge:updatedCheckout?.paymentMethod?.platformChargeAmount
+                    platformCharge:updatedCheckout?.paymentMethod?.platformChargeAmount || 0
                   },
                   cashback: res?.data?.cashback,
                 },
@@ -1724,7 +1727,7 @@ export const cart = ({
                     ?.cashbackDiscountAmount,
                 platformCharge:
                   res?.data?.checkoutLinesUpdate?.checkout?.paymentMethod
-                    ?.platformChargeAmount,
+                    ?.platformChargeAmount || 0,
               },
               cashback: res?.data?.checkoutLinesUpdate?.checkout?.cashback,
             },
@@ -1885,7 +1888,7 @@ export const cart = ({
               cashbackDiscount:
                 updatedCheckout?.paymentMethod?.cashbackDiscountAmount,
               platformCharge:
-                updatedCheckout?.paymentMethod?.platformChargeAmount,
+                updatedCheckout?.paymentMethod?.platformChargeAmount || 0,
             },
             cashback: updatedCheckout?.cashback,
           },
@@ -2000,7 +2003,7 @@ export const cart = ({
               cashbackDiscount:
                 updatedCheckout?.paymentMethod?.cashbackDiscountAmount,
               platformCharge:
-                updatedCheckout?.paymentMethod?.platformChargeAmount,
+                updatedCheckout?.paymentMethod?.platformChargeAmount || 0,
             },
             cashback: updatedCheckout?.cashback,
           },
@@ -2135,7 +2138,7 @@ export const cart = ({
                   ?.cashbackDiscountAmount,
               platformCharge:
                 res?.data?.checkoutLinesUpdate?.checkout?.paymentMethod
-                  ?.platformChargeAmount
+                  ?.platformChargeAmount || 0
             },
             cashback: res?.data?.checkoutLinesUpdate?.checkout?.cashback,
           },
@@ -2229,7 +2232,7 @@ export const cart = ({
                   ?.cashbackDiscountAmount,
               platformCharge:
                 res?.data?.checkoutCreate?.checkout?.paymentMethod
-                  ?.platformChargeAmount,
+                  ?.platformChargeAmount || 0,
             },
             cashback: res?.data?.checkoutCreate?.checkout?.cashback,
           },
@@ -2245,13 +2248,16 @@ export const cart = ({
             localCashback: resDiscount.data.cashback,
           },
         });
-
         if (updateShippingMethod) {
           await setLocalCheckoutInCache(
             client,
             res?.data?.checkoutCreate?.checkout,
             true
           );
+
+
+
+
         }
       }
       const returnObject = {
