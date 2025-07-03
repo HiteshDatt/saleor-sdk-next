@@ -300,7 +300,7 @@ const getTypePolicies = (autologin: boolean): TypedTypePolicies => ({
               }
             );
           }
-          console.log("checkout latest existing", existing);
+
           return (
             existing || {
               prepaidDiscount: "0",
