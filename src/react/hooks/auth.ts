@@ -1,7 +1,9 @@
 import { USER } from "../../apollo/queries";
 import { SaleorContext } from "../components";
-import { useQuery } from "@apollo/client";
 import { useContext } from "react";
+import {
+  ApolloQueryResult,
+} from "@apollo/client";
 import {
   UserDetailsQuery,
   UserDetailsQueryVariables,
@@ -48,11 +50,12 @@ export const useRefetchUser = () => {
     throw new Error("SaleorClient not found in context.");
   }
 
-  const { refetch } = useQuery<UserDetailsQuery, UserDetailsQueryVariables>(USER, {
-    client: saleorClient._internal.apolloClient,
-    fetchPolicy: "network-only", // bypass cache
-    notifyOnNetworkStatusChange: true,
-  });
+  const refetchUser = (): Promise<ApolloQueryResult<UserDetailsQuery>> => {
+    return saleorClient._internal.apolloClient.query<UserDetailsQuery, UserDetailsQueryVariables>({
+      query: USER,
+      fetchPolicy: "network-only", // 🔄 always go to network
+    });
+  };
 
-  return { refetchUser: refetch };
+  return { refetchUser };
 };
