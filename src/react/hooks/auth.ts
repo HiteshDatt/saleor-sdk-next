@@ -1,4 +1,7 @@
 import { USER } from "../../apollo/queries";
+import { SaleorContext } from "../components";
+import { useQuery } from "@apollo/client";
+import { useContext } from "react";
 import {
   UserDetailsQuery,
   UserDetailsQueryVariables,
@@ -23,7 +26,6 @@ export const useAuthState = (): UserDetailsQuery => {
     USER
   );
   const { data } = res;
-    console.log("user res", data);
 
   if (!data) {
     // throw new Error(
@@ -36,4 +38,21 @@ export const useAuthState = (): UserDetailsQuery => {
   }
 
   return data || { authenticated: false, authenticating: false, user: null, userCheckoutLoading: false };
+};
+
+
+export const useRefetchUser = () => {
+  const saleorClient = useContext(SaleorContext);
+
+  if (!saleorClient) {
+    throw new Error("SaleorClient not found in context.");
+  }
+
+  const { refetch } = useQuery<UserDetailsQuery, UserDetailsQueryVariables>(USER, {
+    client: saleorClient._internal.apolloClient,
+    fetchPolicy: "network-only", // bypass cache
+    notifyOnNetworkStatusChange: true,
+  });
+
+  return { refetchUser: refetch };
 };
