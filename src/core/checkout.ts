@@ -1014,11 +1014,12 @@ export const checkout = ({
         isRecalculate: input.isRecalculate,
         cashbackType: input.cashbackType
       };
-
+      const token = storage.getAccessToken();
       await fetch(`${restApiUrl}/rest/checkout_payment_method/`,{
         method: "POST",
           headers: {
             "Content-Type": "application/json",
+            "Authorization": `JWT ${token}`
           },
           body: JSON.stringify(variables),
       })
