@@ -351,7 +351,7 @@ export const orderDetailFragment = gql`
       id
       productName
       quantity
-      data
+
       variant {
         ...ProductVariant
       }
