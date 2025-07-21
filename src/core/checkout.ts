@@ -810,12 +810,20 @@ export const checkout = ({
         checkoutId: checkout?.id,
         promoCode,
       };
+      const token = storage.getAccessToken();
+      let header:any = {
+        "Content-Type": "application/json"
+      };
+      if(token){
+        header={
+          ...header,
+          "Authorization": `JWT ${token}`
+        }
+      }
 
       const resData = await fetch(`${restApiUrl}/rest/add_promo_code/`,{
         method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: header,
           body: JSON.stringify(variables)
       });
       const res = await resData.json();
@@ -863,12 +871,20 @@ export const checkout = ({
         checkoutId: checkout?.id,
         promoCode,
       };
+      const token = storage.getAccessToken();
+      let header:any = {
+        "Content-Type": "application/json"
+      };
+      if(token){
+        header={
+          ...header,
+          "Authorization": `JWT ${token}`
+        }
+      }
 
       const resData = await fetch(`${restApiUrl}/rest/remove_promo_code/`,{
         method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: header,
           body: JSON.stringify(variables)
       });
       const res = await resData.json();

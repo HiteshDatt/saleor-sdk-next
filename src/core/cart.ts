@@ -177,11 +177,19 @@ export const cart = ({
     }
 
     if (checkout && checkout?.token) {
+      const token = storage.getAccessToken();
+      let header:any = {
+        "Content-Type": "application/json"
+      };
+      if(token){
+        header={
+          ...header,
+          "Authorization": `JWT ${token}`
+        }
+      }
       const resJson = await fetch(`${restApiUrl}/rest/add_to_cart/`,{
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: header,
         body: JSON.stringify(atcPayload),
       }
       );
@@ -376,6 +384,16 @@ export const cart = ({
       //     );
       //   },
       // });
+      const token = storage.getAccessToken();
+      let header:any = {
+        "Content-Type": "application/json"
+      };
+      if(token){
+        header={
+          ...header,
+          "Authorization": `JWT ${token}`
+        }
+      }
       const obj = {
         checkoutId: checkout?.id,
         lines: [
@@ -389,9 +407,7 @@ export const cart = ({
       }  
       const resJson = await fetch(`${restApiUrl}/rest/update_cart/`,{
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: header,
         body: JSON.stringify(obj),
       }
       );
@@ -541,11 +557,19 @@ export const cart = ({
       }
 
       if (checkout && checkout?.token) {
+        const token = storage.getAccessToken();
+        let header:any = {
+          "Content-Type": "application/json"
+        };
+        if(token){
+          header={
+            ...header,
+            "Authorization": `JWT ${token}`
+          }
+        }
         const resJson = await fetch(`${restApiUrl}/rest/update_cart/`,{
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: header,
           body: JSON.stringify(updatePayload),
         }
         );
