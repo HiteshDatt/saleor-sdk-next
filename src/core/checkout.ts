@@ -665,7 +665,7 @@ export const checkout = ({
 
       const token = storage.getAccessToken();
 
-      await fetch(`${restApiUrl}/rest/address_update/`,{
+      const response = await fetch(`${restApiUrl}/rest/address_update/`,{
         method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -703,6 +703,8 @@ export const checkout = ({
           errors: error
         };
       });
+
+      return response;
     }
 
     return null;
