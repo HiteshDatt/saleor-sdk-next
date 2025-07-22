@@ -688,7 +688,7 @@ export const checkout = ({
         }
         return {
           data,
-          errors: data?.message ? [{"message":data?.message,"field":data?.field,"code":data?.code}] as readonly GraphQLError[] : undefined
+          errors: data?.message ? [{"message":data?.message,"field":data?.field,"code":data?.code}] as unknown as readonly GraphQLError[] : undefined
         };
       })
       .catch((error) => {
@@ -701,7 +701,7 @@ export const checkout = ({
         });
         return {
           data: null,
-          errors: [{"message": error?.message}] as readonly GraphQLError[]
+          errors: [{"message": error?.message}] as unknown as readonly GraphQLError[]
         };
       });
 
