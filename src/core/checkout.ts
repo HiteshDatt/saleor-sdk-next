@@ -93,6 +93,7 @@ import {
   SetShippingAndBillingAddressResult,
   SetShippingMethodResult,
 } from "./types";
+import { GraphQLError } from "graphql";
 
 interface CheckoutInput {
   lines?: Array<{variantId:string,quantity:number}>;
@@ -687,7 +688,7 @@ export const checkout = ({
         }
         return {
           data,
-          errors: data?.message ? [{"message":data?.message,"field":data?.field,"code":data?.code}] : undefined
+          errors: data?.message ? [{"message":data?.message,"field":data?.field,"code":data?.code}] as readonly GraphQLError[] : undefined
         };
       })
       .catch((error) => {
