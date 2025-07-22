@@ -700,7 +700,7 @@ export const checkout = ({
         });
         return {
           data: null,
-          errors: error
+          errors: [{"message": error?.message}]
         };
       });
 
