@@ -701,7 +701,7 @@ export const checkout = ({
         });
         return {
           data: null,
-          errors: [{"message": error?.message}]
+          errors: [{"message": error?.message}] as readonly GraphQLError[]
         };
       });
 
