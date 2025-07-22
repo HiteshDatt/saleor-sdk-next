@@ -20865,7 +20865,7 @@ export type UpdateCheckoutShippingAddressMutationVariables = Exact<{
 }>;
 
 
-export type UpdateCheckoutShippingAddressMutation = { checkoutShippingAddressUpdate: Maybe<{ errors: Array<CheckoutErrorFragment>, checkout: Maybe<CheckoutFragment> }>, checkoutEmailUpdate: Maybe<{ checkout: Maybe<CheckoutFragment>, errors: Array<CheckoutErrorFragment> }> } | any;
+export type UpdateCheckoutShippingAddressMutation = { checkoutShippingAddressUpdate: Maybe<{ errors: Array<CheckoutErrorFragment>, checkout: Maybe<CheckoutFragment> }>, checkoutEmailUpdate: Maybe<{ checkout: Maybe<CheckoutFragment>, errors: Array<CheckoutErrorFragment> }> };
 
 export type UpdateCheckoutBillingAddressMutationVariables = Exact<{
   checkoutId: Scalars['ID'];

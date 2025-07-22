@@ -687,7 +687,7 @@ export const checkout = ({
         }
         return {
           data,
-          errors: data?.message ? [{"message":data?.message,"field":data?.field,"code":data?.code}] : null
+          errors: data?.message ? [{"message":data?.message,"field":data?.field,"code":data?.code}] : undefined
         };
       })
       .catch((error) => {
