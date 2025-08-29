@@ -1,11 +1,11 @@
-import { GET_LOCAL_CHECKOUT } from "../../apollo/queries";
-import {
-  GetLocalCheckoutQuery,
-  GetLocalCheckoutQueryVariables,
-} from "../../apollo/types";
-// import { storage } from "../../core";
+// import { GET_LOCAL_CHECKOUT } from "../../apollo/queries";
+// import {
+//   GetLocalCheckoutQuery,
+//   GetLocalCheckoutQueryVariables,
+// } from "../../apollo/types";
+import { storage } from "../../core";
 import { hookFactory } from "../helpers/hookFactory";
-import { hookStateFactory } from "../helpers/hookStateFactory";
+// import { hookStateFactory } from "../helpers/hookStateFactory";
 import { createTaxedPriceFromAmount, getMetadataValue } from "../utils/utils";
 
 const defaultPrice = {
@@ -25,30 +25,30 @@ const defaultPrice = {
 export const useCart = hookFactory("cart");
 
 export const useCartState = () => {
-  const res = hookStateFactory<
-    GetLocalCheckoutQuery,
-    GetLocalCheckoutQueryVariables
-  >(GET_LOCAL_CHECKOUT);
-//   const checkoutString = storage.getCheckout();
-//   const checkout =
-//     checkoutString && typeof checkoutString === "string"
-//       ? JSON.parse(checkoutString)
-//       : checkoutString;
-//   const discountsString = storage.getDiscounts();
-//   const discounts =
-//     discountsString && typeof discountsString === "string"
-//       ? JSON.parse(discountsString)
-//       : discountsString;
-// console.log('useCartState',checkout,'discount',discounts);
-  const { data, error, networkStatus, previousData, loading } = res;
-  console.log("useCartState", {
-    res,
-    data,
-    error,
-    networkStatus,
-    previousData,
-    loading,
-  },);
+  // const res = hookStateFactory<
+  //   GetLocalCheckoutQuery,
+  //   GetLocalCheckoutQueryVariables
+  // >(GET_LOCAL_CHECKOUT);
+  const checkoutString = storage.getCheckout();
+  const checkout =
+    checkoutString && typeof checkoutString === "string"
+      ? JSON.parse(checkoutString)
+      : checkoutString;
+  const discountsString = storage.getDiscounts();
+  const discounts =
+    discountsString && typeof discountsString === "string"
+      ? JSON.parse(discountsString)
+      : discountsString;
+console.log('useCartState',checkout,'discount',discounts);
+  // const { data, error, networkStatus, previousData, loading } = res;
+  // console.log("useCartState", {
+  //   res,
+  //   data,
+  //   error,
+  //   networkStatus,
+  //   previousData,
+  //   loading,
+  // },);
 // 'cache state',res?.client?.cache?.extract());
 // console.log("useCartState query->",GET_LOCAL_CHECKOUT )
 
@@ -59,7 +59,7 @@ export const useCartState = () => {
   // }
 
   const mrp =
-    data?.localCheckout?.lines?.reduce((total:any, curr:any) => {
+    checkout?.lines?.reduce((total:any, curr:any) => {
       const variantMetadata = curr?.variant.metadata;
 
       const listPrice = getMetadataValue(variantMetadata, "listPrice");
@@ -83,7 +83,7 @@ export const useCartState = () => {
     }, 0) || 0;
 
   const netPrice =
-    data?.localCheckout?.lines?.reduce((total:any, curr:any) => {
+    checkout?.lines?.reduce((total:any, curr:any) => {
       if (curr?.quantity) {
         const netPriceAmount =
           (curr?.variant.pricing?.priceUndiscounted?.gross.amount ||
@@ -99,28 +99,28 @@ export const useCartState = () => {
   const itemDiscount = mrp - netPrice;
 
   const cartState = {
-    items: data?.localCheckout?.lines || [],
-    totalPrice: data?.localCheckout?.totalPrice || defaultPrice,
-    subtotalPrice: data?.localCheckout?.subtotalPrice || defaultPrice,
-    shippingPrice: data?.localCheckout?.shippingPrice || defaultPrice,
-    discount: data?.localCheckout?.discount,
+    items: checkout?.lines || [],
+    totalPrice: checkout?.totalPrice || defaultPrice,
+    subtotalPrice: checkout?.subtotalPrice || defaultPrice,
+    shippingPrice: checkout?.shippingPrice || defaultPrice,
+    discount: checkout?.discount,
     mrp: createTaxedPriceFromAmount(mrp || 0) || defaultPrice,
     netPrice: createTaxedPriceFromAmount(netPrice || 0) || defaultPrice,
     itemDiscount: createTaxedPriceFromAmount(itemDiscount || 0) || defaultPrice,
-    offerDiscount: data?.localCheckout?.totalPrice || defaultPrice,
+    offerDiscount: checkout?.totalPrice || defaultPrice,
     prepaidDiscount:
       createTaxedPriceFromAmount(
-        data?.localCheckoutDiscounts?.prepaidDiscount
+        discounts?.checkoutDiscounts?.prepaidDiscount
       ) || defaultPrice,
     cashbackDiscount:
       createTaxedPriceFromAmount(
-        data?.localCheckoutDiscounts?.cashbackDiscount
+        discounts?.checkoutDiscounts?.cashbackDiscount
       ) || defaultPrice,
     couponDiscount:
       createTaxedPriceFromAmount(
-        data?.localCheckoutDiscounts?.couponDiscount
+        discounts?.checkoutDiscounts?.couponDiscount
       ) || defaultPrice,
-    cashbackRecieve: data?.localCashback || { amount: 0, willAddOn: null },
+    cashbackRecieve: discounts?.cashback || { amount: 0, willAddOn: null },
   };
 
   return cartState;
