@@ -98,10 +98,30 @@ export const useCartState = () => {
 
   const itemDiscount = mrp - netPrice;
 
+  const freebiePrice = data?.localCheckout?.lines?.find( line => {
+    const temp = line?.data ? JSON.parse(line?.data) : null;
+    if(temp?.type==="FREE_SKU") return true;
+    return false;
+  })?.totalPrice?.gross?.amount || 0;
+
+  const subtotalPriceNewObj = {
+    ...data?.localCheckout?.subtotalPrice,
+    gross: {
+      ...data?.localCheckout?.subtotalPrice?.gross,
+      amount:
+        (data?.localCheckout?.subtotalPrice?.gross?.amount || 0) + Number(freebiePrice),
+    },
+    net: {
+      ...data?.localCheckout?.subtotalPrice?.net,
+      amount:
+        (data?.localCheckout?.subtotalPrice?.net?.amount || 0) + Number(freebiePrice),
+    }
+  }
+
   const cartState = {
     items: data?.localCheckout?.lines || [],
     totalPrice: data?.localCheckout?.totalPrice || defaultPrice,
-    subtotalPrice: data?.localCheckout?.subtotalPrice || defaultPrice,
+    subtotalPrice: (freebiePrice ? subtotalPriceNewObj : data?.localCheckout?.subtotalPrice) || defaultPrice,
     shippingPrice: data?.localCheckout?.shippingPrice || defaultPrice,
     discount: data?.localCheckout?.discount,
     mrp: createTaxedPriceFromAmount(mrp || 0) || defaultPrice,
