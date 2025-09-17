@@ -99,9 +99,14 @@ export const useCartState = () => {
   const itemDiscount = mrp - netPrice;
 
   const freebiePrice = data?.localCheckout?.lines?.find( line => {
-    const temp = line?.data ? JSON.parse(line?.data) : null;
-    if(temp?.type==="FREE_SKU") return true;
-    return false;
+    try {
+      const temp = line?.data ? JSON.parse(line?.data) : null;
+      if(temp?.type==="FREE_SKU") return true;
+      return false;
+    } catch (error) {
+      console.error("Error parsing line data JSON: at cartState", error);
+      return false;
+    }
   })?.totalPrice?.gross?.amount || 0;
 
   const subtotalPriceNewObj = {
@@ -117,6 +122,12 @@ export const useCartState = () => {
         (data?.localCheckout?.subtotalPrice?.net?.amount || 0) + Number(freebiePrice),
     }
   }
+  console.log('321 useCartStateWithFreebie',{
+    subtotalPriceNewObj,
+    freebiePrice,
+    defaultPrice,
+    subtotalPrice: (freebiePrice ? subtotalPriceNewObj : data?.localCheckout?.subtotalPrice) || defaultPrice
+  });
 
   const cartState = {
     items: data?.localCheckout?.lines || [],
