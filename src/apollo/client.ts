@@ -439,7 +439,7 @@ export const createApolloClient = (
           and compare it with the given string */
           if (name == cookiePair[0].trim()) {
             // Decode the cookie value and return
-            return decodeURIComponent(cookiePair[1]);
+            return cookiePair[1] || null;
           }
         }
 
@@ -501,7 +501,7 @@ export async function axiosRequest(
         and compare it with the given string */
         if (name == cookiePair[0].trim()) {
           // Decode the cookie value and return
-          return decodeURIComponent(cookiePair[1]);
+          return cookiePair[1] || null;
         }
       }
 
