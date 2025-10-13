@@ -182,6 +182,8 @@ export const checkout = ({
 }: SaleorClientMethodsProps): CheckoutSDK => {
    const createCheckoutRest: CheckoutSDK["createCheckoutRest"] = async (checkoutInput) => {
     console.log("createCheckoutRest. called with:", checkoutInput);
+    console.info("createCheckoutRest. called with:", checkoutInput);
+    console.error("createCheckoutRest. called with:", checkoutInput);
     try {
       client.writeQuery({
         query: GET_LOCAL_CHECKOUT,
