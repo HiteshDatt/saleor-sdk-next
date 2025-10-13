@@ -180,7 +180,8 @@ export const checkout = ({
   apolloClient: client,
   restApiUrl
 }: SaleorClientMethodsProps): CheckoutSDK => {
-  const createCheckoutRest: CheckoutSDK["createCheckoutRest"] = async (checkoutInput) => {
+   const createCheckoutRest: CheckoutSDK["createCheckoutRest"] = async (checkoutInput) => {
+    console.log("createCheckoutRest. called with:", checkoutInput);
     try {
       client.writeQuery({
         query: GET_LOCAL_CHECKOUT,
@@ -190,12 +191,16 @@ export const checkout = ({
       });
   
       const checkoutString = storage.getCheckout();
+      console.log("createCheckoutRest checkoutString:", checkoutString);
       const checkout =
         checkoutString && typeof checkoutString === "string"
           ? JSON.parse(checkoutString)
           : checkoutString;
+      console.log("createCheckoutRest checkout:", checkout);
+      console.log("createCheckoutRest condition check — has checkout.id", checkout?.id);
       if (!(checkout && checkout?.id)) {
         const token = storage.getAccessToken();
+        console.log("createCheckoutRest token:", token);
         let header:any = {
           "Content-Type": "application/json",
         };
@@ -210,8 +215,10 @@ export const checkout = ({
               checkoutInput:checkoutInput
             }),
         });
+        console.log("createCheckoutRest dataJson:", dataJson);
+
         if(!dataJson?.ok){
-          console.log("Create checkout api error",dataJson);
+          console.log("createCheckoutRest checkout api error",dataJson);
           client.writeQuery({
             query: GET_LOCAL_CHECKOUT,
             data: {
@@ -226,19 +233,21 @@ export const checkout = ({
           ...dummyCheckoutFields,
           ...data
         }
-        console.log('checkout create updatedCheckout',data,updatedCheckout);
+        console.log('createCheckoutRest checkout create updatedCheckout',data,updatedCheckout);
         if (data?.id) {
           await setLocalCheckoutInCache(client, updatedCheckout);
           storage.setCheckout(updatedCheckout);
+          console.log("createCheckoutRest — checkout stored locally:");
         }
         return {
           data,
           errors: data?.message ? [{"message":data?.message}] : null
         };
       }
+      console.log("createCheckoutRest returning null — either checkout existed or error occurred");
       return null;
     } catch (error) {
-      console.log('create checkout error',error);
+      console.log('createCheckoutRest checkout error',error);
       client.writeQuery({
         query: GET_LOCAL_CHECKOUT,
         data: {
