@@ -200,6 +200,8 @@ export const checkout = ({
           : checkoutString;
       console.log("createCheckoutRest checkout:", checkout);
       console.log("createCheckoutRest condition check — has checkout.id", checkout?.id);
+      console.info("createCheckoutRest checkout:", checkout);
+      console.error("createCheckoutRest checkout:", checkout);
       if (!(checkout && checkout?.id)) {
         const token = storage.getAccessToken();
         console.log("createCheckoutRest token:", token);
