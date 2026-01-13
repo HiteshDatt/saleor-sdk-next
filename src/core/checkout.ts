@@ -1045,6 +1045,15 @@ export const checkout = ({
       .then((res) => res.json())
       .then((data) => {
         if(data?.id){
+
+          client.writeQuery({
+            query: GET_LOCAL_CHECKOUT,
+            data: {
+              useCashback: data?.paymentMethod?.useCashback ?? false,
+            },
+          });
+          storage.setUseCashback(data?.paymentMethod?.useCashback ?? false);
+
           const updatedCheckout = {
             ...dummyCheckoutFields,
             ...data
