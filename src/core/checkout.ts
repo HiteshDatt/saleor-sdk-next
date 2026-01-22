@@ -155,7 +155,7 @@ export interface CheckoutSDK {
   ) => CheckoutPaymentMethodUpdateResult;
   checkoutPaymentMethodUpdateRest?: (
     input: PaymentMethodUpdateInput
-  ) => Promise<any>;
+  ) => CheckoutPaymentMethodUpdateResult;
   createPayment?: (input: CreatePaymentInput) => CreatePaymentResult;
   completeCheckout?: (input?: CompleteCheckoutInput) => CompleteCheckoutResult;
   getCityStateFromPincode?: (pincode: string) => GetCityStateFromPincodeResult;
@@ -1034,16 +1034,16 @@ export const checkout = ({
         cashbackType: input.cashbackType
       };
       const token = storage.getAccessToken();
-      try {
-        const res = await fetch(`${restApiUrl}/rest/checkout_payment_method/`, {
-          method: "POST",
+      await fetch(`${restApiUrl}/rest/checkout_payment_method/`,{
+        method: "POST",
           headers: {
             "Content-Type": "application/json",
             "Authorization": `JWT ${token}`
           },
           body: JSON.stringify(variables),
-        });
-        const data = await res.json();
+      })
+      .then((res) => res.json())
+      .then((data) => {
         if(data?.id){
           const updatedCheckout = {
             ...dummyCheckoutFields,
@@ -1056,29 +1056,18 @@ export const checkout = ({
             true
           );
           return {
-            data:{checkoutPaymentMethodUpdate:{checkout:updatedCheckout, checkoutErrors: data?.message ? [{"message":data?.message}] : []}},
+            data:{checkoutPaymentMethodUpdate:{checkout:updatedCheckout}},
+            errors: data?.message ? [{"message":data?.message}] : null
           };
         }
-        return {
-          data: {
-            checkoutPaymentMethodUpdate: {
-              checkout: null,
-              checkoutErrors: data?.message ? [{ field: null, message: data.message, code: null }] : []}
-            }
-          };
-      } catch (error) {
+      })
+      .catch((error) => {
         console.error('Error: checkoutPaymentMethodUpdate', error);
         return {
-          data: {
-            checkoutPaymentMethodUpdate: {
-              checkout: null,
-                checkoutErrors: [
-                  { field: null, message: String(error), code: null }
-                ]
-              }
-            }
-          };
-      }
+          data: null,
+          errors: error
+        };
+      });
     }
 
     return null;
