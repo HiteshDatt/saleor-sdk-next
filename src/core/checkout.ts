@@ -1055,7 +1055,7 @@ export const checkout = ({
             updatedCheckout,
             true
           );
-          return res;
+          return data;
         }
       } catch (error) {
         console.error('Error: checkoutPaymentMethodUpdate', error);
