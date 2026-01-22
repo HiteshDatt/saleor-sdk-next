@@ -155,7 +155,7 @@ export interface CheckoutSDK {
   ) => CheckoutPaymentMethodUpdateResult;
   checkoutPaymentMethodUpdateRest?: (
     input: PaymentMethodUpdateInput
-  ) => CheckoutPaymentMethodUpdateResult;
+  ) => Promise<any>;
   createPayment?: (input: CreatePaymentInput) => CreatePaymentResult;
   completeCheckout?: (input?: CompleteCheckoutInput) => CompleteCheckoutResult;
   getCityStateFromPincode?: (pincode: string) => GetCityStateFromPincodeResult;
@@ -1034,16 +1034,16 @@ export const checkout = ({
         cashbackType: input.cashbackType
       };
       const token = storage.getAccessToken();
-      await fetch(`${restApiUrl}/rest/checkout_payment_method/`,{
-        method: "POST",
+      try {
+        const res = await fetch(`${restApiUrl}/rest/checkout_payment_method/`, {
+          method: "POST",
           headers: {
             "Content-Type": "application/json",
             "Authorization": `JWT ${token}`
           },
           body: JSON.stringify(variables),
-      })
-      .then((res) => res.json())
-      .then((data) => {
+        });
+        const data = await res.json();
         if(data?.id){
           const updatedCheckout = {
             ...dummyCheckoutFields,
@@ -1055,19 +1055,12 @@ export const checkout = ({
             updatedCheckout,
             true
           );
-          return {
-            data:{checkoutPaymentMethodUpdate:{checkout:updatedCheckout}},
-            errors: data?.message ? [{"message":data?.message}] : null
-          };
+          return res;
         }
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error('Error: checkoutPaymentMethodUpdate', error);
-        return {
-          data: null,
-          errors: error
-        };
-      });
+        return error;
+      }
     }
 
     return null;
