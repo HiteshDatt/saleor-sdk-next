@@ -155,7 +155,7 @@ export interface CheckoutSDK {
   ) => CheckoutPaymentMethodUpdateResult;
   checkoutPaymentMethodUpdateRest?: (
     input: PaymentMethodUpdateInput
-  ) => CheckoutPaymentMethodUpdateResult;
+  ) => Promise<any>;
   createPayment?: (input: CreatePaymentInput) => CreatePaymentResult;
   completeCheckout?: (input?: CompleteCheckoutInput) => CompleteCheckoutResult;
   getCityStateFromPincode?: (pincode: string) => GetCityStateFromPincodeResult;
