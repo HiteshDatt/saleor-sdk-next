@@ -1056,16 +1056,28 @@ export const checkout = ({
             true
           );
           return {
-            data:{checkoutPaymentMethodUpdate:{checkout:updatedCheckout}},
-            errors: data?.message ? [{"message":data?.message}] : null
+            data:{checkoutPaymentMethodUpdate:{checkout:updatedCheckout, checkoutErrors: data?.message ? [{"message":data?.message}] : []}},
           };
         }
+        return {
+          data: {
+            checkoutPaymentMethodUpdate: {
+              checkout: null,
+              checkoutErrors: data?.message ? [{ field: null, message: data.message, code: null }] : []}
+            }
+          };
       } catch (error) {
         console.error('Error: checkoutPaymentMethodUpdate', error);
         return {
-          data: null,
-          errors: error
-        };
+          data: {
+            checkoutPaymentMethodUpdate: {
+              checkout: null,
+                checkoutErrors: [
+                  { field: null, message: String(error), code: null }
+                ]
+              }
+            }
+          };
       }
     }
 
