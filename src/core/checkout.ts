@@ -1044,6 +1044,12 @@ export const checkout = ({
           body: JSON.stringify(variables),
         });
         const data = await res.json();
+        if (!res.ok) {
+          throw {
+            status: res.status,
+            data,
+          };
+        }
         if(data?.id){
           const updatedCheckout = {
             ...dummyCheckoutFields,
